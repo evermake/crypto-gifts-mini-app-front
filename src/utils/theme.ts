@@ -25,7 +25,7 @@ export function useColorMode() {
 export const appearance: Plugin = (app) => {
   const appColorMode = shallowRef<MiniAppColorMode>(Telegram.WebApp.colorScheme)
   const appTheme = shallowRef<MiniAppTheme>(Telegram.WebApp.themeParams)
-  const preferredColorMode = useLocalStorage<ColorMode>('color-mode', appColorMode)
+  const preferredColorMode = useLocalStorage<ColorMode>('color-mode', 'system')
 
   const handleThemeChange = () => {
     appColorMode.value = Telegram.WebApp.colorScheme
