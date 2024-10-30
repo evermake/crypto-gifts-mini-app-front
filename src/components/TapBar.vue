@@ -32,20 +32,31 @@ const BUTTONS: { id: Tab, iconSvg: string }[] = [
 
 <style module lang="scss">
 .tapbar {
+  --pb: calc(34px - var(--window-h-diff));
+
   padding-top: 8px;
-  position: fixed;
-  bottom: 0;
-  height: 58px;
+  padding-bottom: var(--pb);
   background: var(--tapbar-bg);
   width: 100%;
   display: flex;
   align-items: stretch;
+  -webkit-backdrop-filter: blur(50px);
   backdrop-filter: blur(50px);
-  border-top: 0.33px solid var(--separator);
+  transition: padding-bottom ease-out 100ms;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 0.33px;
+    background-color: var(--separator);
+  }
 }
 
 .button {
   flex: 1 0;
+  height: 42px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -63,6 +74,7 @@ const BUTTONS: { id: Tab, iconSvg: string }[] = [
   line-height: 0.75rem;
   letter-spacing: 0.00625em;
   font-weight: 500;
+  text-align: center;
 }
 
 .icon {

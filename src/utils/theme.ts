@@ -1,6 +1,6 @@
 import type { TelegramWebApps } from 'telegram-webapps'
 import { useLocalStorage } from '@vueuse/core'
-import { computed, inject, type InjectionKey, type Plugin, shallowRef, type ShallowRef } from 'vue'
+import { computed, inject, type InjectionKey, type Plugin, shallowRef, type ShallowRef, watchEffect } from 'vue'
 
 export type ColorMode = 'system' | 'dark' | 'light'
 export type MiniAppTheme = TelegramWebApps.ThemeParams
@@ -52,6 +52,13 @@ export const appearance: Plugin = (app) => {
       preferredColorMode.value = colorMode.value === 'dark' ? 'light' : 'dark'
     }
   }
+
+  watchEffect(() => {
+    if (colorMode.value === 'dark')
+      document.documentElement.classList.add('dark')
+    else
+      document.documentElement.classList.remove('dark')
+  })
 
   app.provide(APPEARANCE_INJECTION_KEY, {
     colorMode,

@@ -14,6 +14,9 @@ export default defineConfig({
     preprocessorOptions: {
       scss: {
         api: 'modern',
+        additionalData: [
+          `@use "~/assets/css/typography" as t;`,
+        ].join('\n'),
       },
     },
   },
