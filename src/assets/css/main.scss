@@ -6,16 +6,16 @@
   --primary: #007aff;
   --bg: #fff;
   --bg-secondary: #efeff3;
-  --tapbar-bg: rgba(241, 241, 242, 0.75);
-  --tapbar-button: #959595;
+  --tabbar-bg: rgba(241, 241, 242, 0.75);
+  --tabbar-button: #959595;
   --separator: rgb(60 60 67 / 0.36);
 
   &.dark {
     --text: #fff;
     --bg: #1c1c1e;
     --bg-secondary: #2c2c2e;
-    --tapbar-bg: rgba(30, 30, 30, 0.75);
-    --tapbar-button: rgb(255 255 255 / 0.4);
+    --tabbar-bg: rgba(30, 30, 30, 0.75);
+    --tabbar-button: #8e8e8e;
   }
 }
 

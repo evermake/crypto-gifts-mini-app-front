@@ -1,5 +1,5 @@
 export default {
-  tapbar: {
+  tabbar: {
     tab: {
       store: 'Store',
       gifts: 'Gifts',

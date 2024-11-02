@@ -1,7 +1,7 @@
 import type { Locale } from '.'
 
 export default ((): Locale => ({
-  tapbar: {
+  tabbar: {
     tab: {
       store: 'Магазин',
       gifts: 'Подарки',

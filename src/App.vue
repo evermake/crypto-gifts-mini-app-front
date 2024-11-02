@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import type { Tab } from './components/TapBar.vue'
+import type { Tab } from './types'
 import { useThrottleFn } from '@vueuse/core'
 import { computed, onMounted, ref, watchEffect } from 'vue'
-import TapBar from './components/TapBar.vue'
+import TapBar from './components/TabBar.vue'
 import Profile from './pages/Profile.vue'
+import StarsEffect from './pages/StarsEffect.vue'
 
 const tab = ref<Tab>('profile')
 
@@ -37,11 +38,9 @@ watchEffect(() => {
   <div :class="$style.root">
     <div :class="$style.page">
       <Profile v-if="tab === 'profile'" />
-      <div v-else>
-        <img v-for="(_, i) in Array.from({ length: 29 }).fill(null)" :key="i" src="/tmp.png" alt="">
-      </div>
+      <StarsEffect v-else-if="tab === 'gifts'" />
     </div>
-    <TapBar v-model:tab="tab" :class="$style.tapbar" />
+    <TapBar v-model:tab="tab" :class="$style.tabbar" />
   </div>
 </template>
 
@@ -54,7 +53,7 @@ watchEffect(() => {
 .page {
   flex: 1 0 auto;
 }
-.tapbar {
+.tabbar {
   position: sticky;
   bottom: 0;
 }
