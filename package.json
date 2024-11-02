@@ -8,23 +8,25 @@
     "build": "vue-tsc -b && vite build",
     "preview": "vite preview",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "deps": "taze -wI minor"
   },
   "dependencies": {
-    "@vueuse/core": "^11.1.0",
+    "@vueuse/core": "^11.2.0",
     "bezier-easing": "^2.1.0",
-    "sass": "^1.80.4",
+    "sass": "^1.80.6",
     "vue": "^3.5.12"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.8.0",
-    "@types/node": "^22.8.2",
+    "@types/node": "^22.8.6",
     "@vitejs/plugin-vue": "^5.1.4",
-    "eslint": "^9.12.0",
+    "eslint": "^9.14.0",
     "eslint-plugin-format": "^0.1.2",
+    "taze": "^0.18.0",
     "telegram-webapps": "^7.10.0",
-    "typescript": "~5.6.2",
-    "vite": "^5.4.9",
-    "vue-tsc": "^2.1.6"
+    "typescript": "~5.6.3",
+    "vite": "^5.4.10",
+    "vue-tsc": "^2.1.10"
   }
 }
