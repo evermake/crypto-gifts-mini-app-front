@@ -6,4 +6,8 @@ export default antfu({
   stylistic: {
     semi: false,
   },
+  ignores: [
+    'src/vendor/**/*.js',
+    'src/assets/**/*.{json,svg}',
+  ],
 })
