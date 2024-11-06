@@ -1,4 +1,12 @@
 @use './reset';
+@use './icons';
+
+*,
+*::before,
+*::after {
+  user-select: none;
+  cursor: default;
+}
 
 :root {
   --text: #000;

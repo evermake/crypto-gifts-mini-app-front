@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { defineAsyncComponent, ref } from 'vue'
 import type { Tab } from '~/types'
-import TabIconSvg from './TabIconSvg.vue'
 
 defineProps<{
   tab: Tab
@@ -19,5 +18,11 @@ const lottieReady = ref(false)
     :active="active"
     @ready="lottieReady = true"
   />
-  <TabIconSvg v-show="!lottieReady" :tab="tab" />
+  <div v-show="!lottieReady" class="icon" :class="[$style.icon, `i-${tab}`]" />
 </template>
+
+<style lang="scss" module>
+.icon {
+  font-size: 26px;
+}
+</style>
