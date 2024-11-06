@@ -1,46 +1,28 @@
 <script setup lang="ts">
 import type { Tab } from './types'
-import { useThrottleFn } from '@vueuse/core'
-import { computed, onMounted, ref, watchEffect } from 'vue'
-import TapBar from './components/TabBar.vue'
+import { onMounted, ref } from 'vue'
+import TabBar from './components/TabBar.vue'
+import Gifts from './pages/Gifts.vue'
 import Profile from './pages/Profile.vue'
-import StarsEffect from './pages/StarsEffect.vue'
+import Store from './pages/Store.vue'
 
 const tab = ref<Tab>('profile')
 
-const innerHeight = ref(window.innerHeight)
-const outerHeight = ref(window.outerHeight)
-const recalculate = useThrottleFn(() => {
-  innerHeight.value = window.innerHeight
-  outerHeight.value = window.outerHeight
-}, 100)
 onMounted(() => {
   Telegram.WebApp.ready()
   Telegram.WebApp.expand()
   Telegram.WebApp.disableVerticalSwipes()
-  Telegram.WebApp.setBackgroundColor('#F5F5F5')
-
-  document.addEventListener('scroll', () => {
-    const isOverscrolledBottom = document.documentElement.scrollTop + window.innerHeight > document.documentElement.scrollHeight
-    if (!isOverscrolledBottom) {
-      recalculate()
-    }
-  })
-})
-
-const windowHeightsDiff = computed(() => (Math.max(0, outerHeight.value - innerHeight.value)))
-watchEffect(() => {
-  document.documentElement.style.setProperty('--window-h-diff', `${windowHeightsDiff.value}px`)
 })
 </script>
 
 <template>
   <div :class="$style.root">
     <div :class="$style.page">
-      <Profile v-if="tab === 'profile'" />
-      <StarsEffect v-else-if="tab === 'gifts'" />
+      <Store v-if="tab === 'store'" />
+      <Gifts v-else-if="tab === 'gifts'" />
+      <Profile v-else-if="tab === 'profile'" />
     </div>
-    <TapBar v-model:tab="tab" :class="$style.tabbar" />
+    <TabBar v-model:tab="tab" :class="$style.tabbar" />
   </div>
 </template>
 
@@ -49,12 +31,10 @@ watchEffect(() => {
   min-height: 100%;
   display: flex;
   flex-direction: column;
+  max-width: 500px;
+  margin: auto;
 }
 .page {
   flex: 1 0 auto;
-}
-.tabbar {
-  position: sticky;
-  bottom: 0;
 }
 </style>

@@ -9,6 +9,11 @@
 }
 
 :root {
+  --z-tabbar: 5;
+  --z-notification: 4;
+
+  --tabbar-pb: 8px;
+
   --text: #000;
   --text-secondary: #8e8e93;
   --primary: #007aff;
@@ -17,6 +22,7 @@
   --tabbar-bg: rgba(241, 241, 242, 0.75);
   --tabbar-button: #959595;
   --separator: rgb(60 60 67 / 0.36);
+  --notification-bg: rgba(45, 45, 45, 0.8);
 
   &.dark {
     --text: #fff;
@@ -24,6 +30,7 @@
     --bg-secondary: #2c2c2e;
     --tabbar-bg: rgba(30, 30, 30, 0.75);
     --tabbar-button: #8e8e8e;
+    --notification-bg: rgba(0, 0, 0, 0.8);
   }
 }
 
@@ -33,13 +40,32 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-family: -apple-system, system-ui, sans-serif;
+  font-family: -apple-system, system-ui, 'Inter', sans-serif;
   background: var(--bg);
   color: var(--text);
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+}
+
+body {
+  padding-bottom: calc(50px + var(--tabbar-pb));
 }
 
 html,
-body,
-#app {
-  height: 100%;
+body {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+:root.platform-ios {
+  --tabbar-pb: 34px;
+  height: 150vh;
+  overflow: hidden;
+
+  & body {
+    height: 100vh;
+    overflow-y: auto;
+  }
 }

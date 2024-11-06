@@ -2,9 +2,8 @@
 import type { Tab } from '~/types'
 import TabIcon from './TabIcon.vue'
 
-const tab = defineModel<Tab | null>('tab', { default: null })
-
 const BUTTONS: Tab[] = ['store', 'gifts', 'leaderboard', 'profile']
+const tab = defineModel<Tab | null>('tab', { default: null })
 </script>
 
 <template>
@@ -23,25 +22,32 @@ const BUTTONS: Tab[] = ['store', 'gifts', 'leaderboard', 'profile']
 
 <style module lang="scss">
 .tabbar {
-  --pb: calc(34px - var(--window-h-diff));
-
   padding-top: 8px;
-  padding-bottom: var(--pb);
-  background: var(--tabbar-bg);
+  padding-bottom: var(--tabbar-pb);
   width: 100%;
   display: flex;
   align-items: stretch;
-  -webkit-backdrop-filter: blur(50px);
+
+  background: var(--tabbar-bg);
   backdrop-filter: blur(50px);
   transition: padding-bottom ease-out 100ms;
+
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: var(--z-tabbar);
 
   &::before {
     content: '';
     position: absolute;
     top: 0;
     width: 100%;
-    height: 0.33px;
+    height: 1px;
     background-color: var(--separator);
+
+    @media (min-resolution: 2x) {
+      height: 0.33px;
+    }
   }
 }
 
