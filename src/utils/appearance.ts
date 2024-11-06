@@ -1,8 +1,10 @@
 import type { TelegramWebApps } from 'telegram-webapps'
 import { useLocalStorage } from '@vueuse/core'
 import { computed, inject, type InjectionKey, type Plugin, shallowRef, type ShallowRef, watchEffect } from 'vue'
+import { DARK_MODE_BG_COLOR, DARK_MODE_HEADER_COLOR, LIGHT_MODE_BG_COLOR, LIGHT_MODE_HEADER_COLOR } from '~/config'
 
 export type ColorMode = 'system' | 'dark' | 'light'
+export type ResolvedColorMode = 'dark' | 'light'
 export type MiniAppTheme = TelegramWebApps.ThemeParams
 export type MiniAppColorMode = TelegramWebApps.ColorScheme
 
@@ -10,7 +12,8 @@ export const APPEARANCE_INJECTION_KEY = Symbol('theme') as InjectionKey<{
   theme: ShallowRef<MiniAppTheme>
   preferredColorMode: ShallowRef< ColorMode>
   colorMode: ShallowRef<Exclude<ColorMode, 'system'>>
-  toggleColorMode: () => void
+  setColorMode: (target: ResolvedColorMode) => void
+  platform: TelegramWebApps.WebApp['platform']
 }>
 
 export function useAppearance() {
@@ -20,6 +23,11 @@ export function useAppearance() {
 export function useColorMode() {
   const { colorMode } = useAppearance()
   return colorMode
+}
+
+function setupMiniAppColors(colorMode: ResolvedColorMode) {
+  Telegram.WebApp.setHeaderColor(colorMode === 'dark' ? DARK_MODE_HEADER_COLOR : LIGHT_MODE_HEADER_COLOR)
+  Telegram.WebApp.setBackgroundColor(colorMode === 'dark' ? DARK_MODE_BG_COLOR : LIGHT_MODE_BG_COLOR)
 }
 
 export const appearance: Plugin = (app) => {
@@ -37,19 +45,18 @@ export const appearance: Plugin = (app) => {
     Telegram.WebApp.offEvent('themeChanged', handleThemeChange)
   })
 
-  const colorMode = computed(() => {
+  const colorMode = computed<ResolvedColorMode>(() => {
     if (preferredColorMode.value === 'system')
       return appColorMode.value
     return preferredColorMode.value
   })
 
-  const toggleColorMode = () => {
-    if (colorMode.value !== appColorMode.value) {
-      // User wants to set a mode that matches the device's one.
+  const setColorMode = (target: ResolvedColorMode) => {
+    if (target === appColorMode.value) {
       preferredColorMode.value = 'system'
     }
     else {
-      preferredColorMode.value = colorMode.value === 'dark' ? 'light' : 'dark'
+      preferredColorMode.value = target
     }
   }
 
@@ -58,12 +65,22 @@ export const appearance: Plugin = (app) => {
       document.documentElement.classList.add('dark')
     else
       document.documentElement.classList.remove('dark')
+
+    setupMiniAppColors(colorMode.value)
   })
+
+  const platform = Telegram.WebApp.platform
+  document.documentElement.classList.add(`platform-${platform}`)
+
+  setTimeout(() => {
+    setupMiniAppColors(colorMode.value)
+  }, 0)
 
   app.provide(APPEARANCE_INJECTION_KEY, {
     colorMode,
     preferredColorMode,
     theme: appTheme,
-    toggleColorMode,
+    setColorMode,
+    platform,
   })
 }

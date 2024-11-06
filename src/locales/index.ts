@@ -1,7 +1,6 @@
-import en_ from './en'
-import ru_ from './ru'
+import en from './_en'
+import ru from './_ru'
 
 export type Locale = typeof en
 
-export const en = en_
-export const ru = ru_
+export { en, ru }
