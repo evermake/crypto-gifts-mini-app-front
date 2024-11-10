@@ -20,7 +20,7 @@ onMounted(() => {
     <div :class="$style.page">
       <Store v-if="tab === 'store'" />
       <Gifts v-else-if="tab === 'gifts'" />
-      <Profile v-else-if="tab === 'profile'" />
+      <Profile v-else-if="tab === 'profile'" me />
     </div>
     <TabBar v-model:tab="tab" :class="$style.tabbar" />
   </div>

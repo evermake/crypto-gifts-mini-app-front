@@ -1,16 +1,49 @@
 <script setup lang="ts">
+import { useQuery } from '@tanstack/vue-query'
 import { computed } from 'vue'
+import { client } from '~/api'
 import Avatar from '~/components/Avatar.vue'
-import Notification from '~/components/Notification.vue'
+import GiftIcon from '~/components/Sticker.vue'
 import type { Option } from '~/components/Switch.vue'
 import Switch from '~/components/Switch.vue'
 import { en, ru } from '~/locales'
 import { useAppearance } from '~/utils/appearance'
 import { useLocalization } from '~/utils/localization'
 
-const NAME = 'Alicia'
-const N = 1234
-const PREM = true
+const props = defineProps<{
+  me?: boolean
+  userId?: string
+}>()
+
+const userId = computed(() => {
+  if (props.me)
+    return 'me'
+  if (!props.userId)
+    console.warn('userId property is required if me is not set')
+  return props.userId ?? ''
+})
+
+const isMyPage = computed(() => userId.value === 'me')
+
+const { data: userData } = useQuery({
+  queryKey: ['user', userId],
+  queryFn: async ({ queryKey }) => {
+    const userId = queryKey[1]
+    if (userId === 'me')
+      return await client.me.query()
+    return await client.user.query({ userId })
+  },
+})
+
+const { data: gifts } = useQuery({
+  queryKey: ['user-gifts', userId],
+  queryFn: async ({ queryKey }) => {
+    const userId = queryKey[1]
+    if (userId === 'me')
+      return await client.userGifts.query({ my: true })
+    return await client.userGifts.query({ userId })
+  },
+})
 
 const { colorMode, setColorMode } = useAppearance()
 const { locale, setLocale } = useLocalization()
@@ -35,7 +68,7 @@ const localeOption = computed<Option>({
 
 <template>
   <div :class="$style.page">
-    <div :class="$style.switches">
+    <div v-if="isMyPage" :class="$style.switches">
       <Switch v-model:option="themeOption">
         <template #left>
           <span :class="$style.switchThemeItem" class="icon i-sun" />
@@ -54,23 +87,24 @@ const localeOption = computed<Option>({
       </Switch>
     </div>
     <div :class="$style.profile">
-      <Avatar :top="160" />
+      <Avatar :top="10101" />
       <div :class="$style.titles">
         <h1 :class="$style.title">
-          {{ NAME }}
-          <span v-if="PREM" class="icon i-premium" />
+          {{ userData?.name }}
+          <span v-if="userData?.isPremium" class="icon i-premium" />
         </h1>
         <h3 :class="$style.subtitle">
-          {{ $t.pages.profile.giftsReceived(N) }}
+          {{ $t.pages.profile.giftsReceived(userData?.receivedGiftsCount ?? 0) }}
         </h3>
       </div>
     </div>
-    <Notification title="Gift Received" description="Delicious Cake from Mark.">
-      <template #trailing>
-        <span>View</span>
-      </template>
-    </Notification>
-    <div :class="$style.gifts" />
+
+    <!-- TODO: Implement virtualization. -->
+    <div :class="$style.gifts">
+      <div v-for="gift in gifts" :key="gift.id" :class="$style.gift">
+        <GiftIcon gift-name="Delicious Cake" />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -116,6 +150,9 @@ const localeOption = computed<Option>({
   flex-wrap: wrap;
   gap: 8px;
   padding: 24px 16px 16px;
+}
+
+.gift {
 }
 
 .titles {

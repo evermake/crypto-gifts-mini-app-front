@@ -9,5 +9,6 @@ export default antfu({
   ignores: [
     'src/vendor/**/*.js',
     'src/assets/**/*.{json,svg}',
+    'src/api/router.d.ts',
   ],
 })

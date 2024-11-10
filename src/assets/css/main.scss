@@ -9,6 +9,10 @@
 }
 
 :root {
+  --font-sf-pro: 'SF Pro', -apple-system, system-ui, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
+  --font-sf-pro-text: 'SF Pro Text', -apple-system, system-ui, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto,
+    sans-serif;
+
   --z-tabbar: 5;
   --z-notification: 4;
 
@@ -40,7 +44,7 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-family: -apple-system, system-ui, 'Inter', sans-serif;
+  font-family: var(--font-sf-pro);
   background: var(--bg);
   color: var(--text);
   overflow-x: hidden;

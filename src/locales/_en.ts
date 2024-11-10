@@ -1,4 +1,4 @@
-import { spacedNumber } from '~/utils/text'
+import { pluralizeEn, spacedNumber } from '~/utils/text'
 
 export default {
   tabbar: {
@@ -11,7 +11,14 @@ export default {
   },
   pages: {
     profile: {
-      giftsReceived: (n: number) => `${spacedNumber(n)} gifts received`,
+      giftsReceived: (n: number) => `${spacedNumber(n)} ${pluralizeEn(n, 'gift', 'gifts')} received`,
+    },
+
+    gifts: {
+      title: 'Send Gifts in Telegram',
+      subtitle: 'Send gifts to users that can be stored in their app profile.',
+      noGifts: 'You don\'t have any gifts yet.',
+      openStore: 'Open Store',
     },
 
     store: {
@@ -24,5 +31,8 @@ export default {
     date: 'Date',
     price: 'Price',
     availability: 'Availability',
+  },
+  misc: {
+    of: 'of',
   },
 }
