@@ -21,6 +21,7 @@
   --text: #000;
   --text-secondary: #8e8e93;
   --primary: #007aff;
+  --primary-transparent: rgba(0, 122, 255, 0.12);
   --bg: #fff;
   --bg-secondary: #efeff3;
   --tabbar-bg: rgba(241, 241, 242, 0.75);
@@ -72,4 +73,16 @@ body {
     height: 100vh;
     overflow-y: auto;
   }
+}
+.gift-gradient-gold {
+  background: linear-gradient(180deg, rgba(254, 159, 65, 0.2) 0%, rgba(254, 159, 65, 0.1) 100%);
+}
+.gift-gradient-red {
+  background: linear-gradient(180deg, rgba(255, 71, 71, 0.2) 0%, rgba(255, 71, 71, 0.05) 100%);
+}
+.gift-gradient-green {
+  background: linear-gradient(180deg, rgba(70, 209, 0, 0.2) 0%, rgba(70, 209, 0, 0.06) 100%);
+}
+.gift-gradient-blue {
+  background: linear-gradient(180deg, rgba(0, 122, 255, 0.2) 0%, rgba(0, 122, 255, 0.05) 100%);
 }

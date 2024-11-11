@@ -39,6 +39,7 @@ const StarsEffect = defineAsyncComponent(() => import('./StarsEffect.vue'))
 
 <style lang="scss" module>
 .sheet {
+  outline: 1px solid red;
   z-index: 5;
   position: relative;
   padding: 16px;

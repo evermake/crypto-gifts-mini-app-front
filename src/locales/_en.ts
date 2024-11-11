@@ -19,11 +19,13 @@ export default {
       subtitle: 'Send gifts to users that can be stored in their app profile.',
       noGifts: 'You don\'t have any gifts yet.',
       openStore: 'Open Store',
+      send: 'Send',
     },
 
     store: {
       title: 'Buy and Send Gifts',
       subtitle: 'Unique gifts for everyone by Crypto Pay.',
+      giftInfoText: 'Purchase this gift for the opportunity to give it to another user.',
     },
   },
   giftInfo: {

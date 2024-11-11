@@ -19,7 +19,7 @@ defineProps<{
   gap: 8px;
   text-align: center;
   align-items: center;
-  font-family: var(--sf-pro);
+  font-family: var(--font-sf-pro);
   padding: 0 32px;
 
   h1 {

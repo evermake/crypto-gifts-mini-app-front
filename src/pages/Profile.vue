@@ -3,9 +3,10 @@ import { useQuery } from '@tanstack/vue-query'
 import { computed } from 'vue'
 import { client } from '~/api'
 import Avatar from '~/components/Avatar.vue'
-import GiftIcon from '~/components/Sticker.vue'
+import Sticker from '~/components/Sticker.vue'
 import type { Option } from '~/components/Switch.vue'
 import Switch from '~/components/Switch.vue'
+import { availabilityText, useExtendWithKind } from '~/composables/gifts'
 import { en, ru } from '~/locales'
 import { useAppearance } from '~/utils/appearance'
 import { useLocalization } from '~/utils/localization'
@@ -35,7 +36,7 @@ const { data: userData } = useQuery({
   },
 })
 
-const { data: gifts } = useQuery({
+const { data: giftsRaw } = useQuery({
   queryKey: ['user-gifts', userId],
   queryFn: async ({ queryKey }) => {
     const userId = queryKey[1]
@@ -44,6 +45,12 @@ const { data: gifts } = useQuery({
     return await client.userGifts.query({ userId })
   },
 })
+const extendWithKind = useExtendWithKind()
+const gifts = computed(() => (
+  giftsRaw.value
+    ? giftsRaw.value.map(extendWithKind)
+    : null
+))
 
 const { colorMode, setColorMode } = useAppearance()
 const { locale, setLocale } = useLocalization()
@@ -86,6 +93,7 @@ const localeOption = computed<Option>({
         </template>
       </Switch>
     </div>
+
     <div :class="$style.profile">
       <Avatar :top="10101" />
       <div :class="$style.titles">
@@ -102,7 +110,14 @@ const localeOption = computed<Option>({
     <!-- TODO: Implement virtualization. -->
     <div :class="$style.gifts">
       <div v-for="gift in gifts" :key="gift.id" :class="$style.gift">
-        <GiftIcon gift-name="Delicious Cake" />
+        <!-- TODO: Add avatar. -->
+        <span gift-availability>
+          {{ availabilityText(gift.kind, $t, true) }}
+        </span>
+
+        <Sticker :id="gift.kind.stickerId" :class="$style.sticker" />
+
+        <span gift-name>{{ gift.kind.name }}</span>
       </div>
     </div>
   </div>
@@ -146,13 +161,49 @@ const localeOption = computed<Option>({
 }
 
 .gifts {
-  display: flex;
-  flex-wrap: wrap;
   gap: 8px;
   padding: 24px 16px 16px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 1fr;
 }
 
 .gift {
+  padding: 8px 12px 12px;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  font-family: var(--font-sf-pro-text);
+  display: flex;
+  flex-direction: column;
+
+  [gift-availability] {
+    text-align: right;
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.125rem;
+    letter-spacing: -0.005rem;
+  }
+
+  .sticker {
+    margin-top: 4px;
+    margin-bottom: 20px;
+    width: 80px;
+    height: 80px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  [gift-name] {
+    color: var(--text);
+    text-align: center;
+    font-size: 0.875rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 1.125rem;
+    letter-spacing: -0.02763rem;
+  }
 }
 
 .titles {

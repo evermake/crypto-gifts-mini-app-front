@@ -1,34 +1,14 @@
 <script setup lang="ts">
-import { useMutation, useQuery } from '@tanstack/vue-query'
-import { client } from '~/api'
 import PageTitle from '~/components/PageTitle.vue'
 import Sticker from '~/components/Sticker.vue'
-import { priceToText, shortenNumber } from '~/utils/text'
+import { availabilityText, useGiftKinds } from '~/composables/gifts'
+import { priceToText } from '~/utils/text'
 
-const { data: kinds } = useQuery({
-  queryKey: ['gift-kinds'],
-  queryFn: async () => {
-    return await client.giftKinds.query()
-  },
-})
+defineEmits<{
+  choose: [kindId: string]
+}>()
 
-const { mutate: requestPurchase } = useMutation({
-  mutationFn: async (kindId: string) => {
-    return await client.requestPurchaseGift.mutate({ kindId })
-  },
-})
-
-function buy(id: string) {}
-
-function colorByKindName(name: string) {
-  name = name.toLowerCase()
-  switch (true) {
-    case name.includes('red'): return 'red'
-    case name.includes('green'): return 'green'
-    case name.includes('blue'): return 'blue'
-  }
-  return 'gold'
-}
+const { kinds } = useGiftKinds()
 </script>
 
 <template>
@@ -44,17 +24,16 @@ function colorByKindName(name: string) {
       <div
         v-for="kind in kinds"
         :key="kind.id"
-        :class="$style.gift"
-        :data-color="colorByKindName(kind.name)"
+        :class="[$style.gift, `gift-gradient-${kind.color}`]"
       >
         <span :class="$style.availability">
-          {{ shortenNumber(kind.limit - kind.inStock) }} {{ $t.misc.of }} {{ shortenNumber(kind.limit) }}
+          {{ availabilityText(kind, $t) }}
         </span>
-        <Sticker :class="$style.sticker" :gift-name="kind.name" />
+        <Sticker :id="kind.stickerId" :class="$style.sticker" />
         <h3 :class="$style.name">
           {{ kind.name }}
         </h3>
-        <button :class="$style.buyBtn">
+        <button :class="$style.buyBtn" @click="$emit('choose', kind.id)">
           <span class="icon" :class="[`i-${kind.price.asset.toLowerCase()}`]" />
           <span>{{ priceToText(kind.price) }}</span>
         </button>
@@ -96,19 +75,6 @@ function colorByKindName(name: string) {
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  &[data-color='gold'] {
-    background: linear-gradient(180deg, rgba(254, 159, 65, 0.2) 0%, rgba(254, 159, 65, 0.1) 100%);
-  }
-  &[data-color='red'] {
-    background: linear-gradient(180deg, rgba(255, 71, 71, 0.2) 0%, rgba(255, 71, 71, 0.05) 100%);
-  }
-  &[data-color='green'] {
-    background: linear-gradient(180deg, rgba(70, 209, 0, 0.2) 0%, rgba(70, 209, 0, 0.06) 100%);
-  }
-  &[data-color='blue'] {
-    background: linear-gradient(180deg, rgba(0, 122, 255, 0.2) 0%, rgba(0, 122, 255, 0.05) 100%);
-  }
 }
 
 .availability {
@@ -116,7 +82,7 @@ function colorByKindName(name: string) {
   opacity: 0.5;
   width: 100%;
   text-align: right;
-  font-family: var(--sf-pro-text);
+  font-family: var(--font-sf-pro-text);
   font-size: 0.8125rem;
   font-style: normal;
   font-weight: 400;
@@ -127,11 +93,12 @@ function colorByKindName(name: string) {
 .sticker {
   margin-top: 8px;
   margin-bottom: 4px;
+  width: 100%;
 }
 
 .name {
   text-align: center;
-  font-family: var(--sf-pro-text);
+  font-family: var(--font-sf-pro-text);
   font-size: 1.0625rem;
   font-style: normal;
   font-weight: 600;
@@ -151,7 +118,7 @@ function colorByKindName(name: string) {
   align-items: center;
   justify-content: center;
 
-  font-family: var(--sf-pro-text);
+  font-family: var(--font-sf-pro-text);
   font-size: 0.8125rem;
   font-style: normal;
   font-weight: 600;

@@ -2,11 +2,13 @@
 import type { Tab } from './types'
 import { onMounted, ref } from 'vue'
 import TabBar from './components/TabBar.vue'
+import GiftKindInfo from './pages/GiftKindInfo.vue'
 import Gifts from './pages/Gifts.vue'
 import Profile from './pages/Profile.vue'
 import Store from './pages/Store.vue'
 
 const tab = ref<Tab>('profile')
+const selectedGiftKindId = ref<string | null>(null)
 
 onMounted(() => {
   Telegram.WebApp.ready()
@@ -18,7 +20,8 @@ onMounted(() => {
 <template>
   <div :class="$style.root">
     <div :class="$style.page">
-      <Store v-if="tab === 'store'" />
+      <GiftKindInfo v-if="selectedGiftKindId" :kind-id="selectedGiftKindId" />
+      <Store v-else-if="tab === 'store'" @choose="(id) => selectedGiftKindId = id" />
       <Gifts v-else-if="tab === 'gifts'" />
       <Profile v-else-if="tab === 'profile'" me />
     </div>
