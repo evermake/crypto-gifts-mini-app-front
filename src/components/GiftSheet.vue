@@ -1,20 +1,30 @@
 <script setup lang="ts">
 import { defineAsyncComponent } from 'vue'
+import Sticker from './Sticker.vue'
+
+defineProps<{
+  stickerId?: string | null
+  title: string
+}>()
+
+defineEmits<{
+  close: []
+}>()
 
 const StarsEffect = defineAsyncComponent(() => import('./StarsEffect.vue'))
 </script>
 
 <template>
   <div :class="$style.sheet">
-    <button :class="$style.close">
+    <button :class="$style.close" @click="$emit('close')">
       <span class="icon i-close" />
     </button>
     <div :class="$style.giftWrapper">
       <StarsEffect :class="$style.stars" :width="500" :height="500" />
-      <img :class="$style.gift" src="/cake.png" alt="">
+      <Sticker :id="stickerId" :class="$style.sticker" />
     </div>
     <h2 :class="$style.title">
-      Delicious Cake
+      {{ title }}
     </h2>
     <div :class="$style.table">
       <div>
@@ -39,9 +49,12 @@ const StarsEffect = defineAsyncComponent(() => import('./StarsEffect.vue'))
 
 <style lang="scss" module>
 .sheet {
-  outline: 1px solid red;
   z-index: 5;
-  position: relative;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
   padding: 16px;
   background-color: var(--bg-secondary);
   border-top-left-radius: 10px;
@@ -89,7 +102,28 @@ const StarsEffect = defineAsyncComponent(() => import('./StarsEffect.vue'))
   z-index: -1;
 }
 
-.gift {
+.sticker {
+  width: 150px;
+  height: 150px;
+
+  animation: sticker-appear 1000ms cubic-bezier(0.49, 0.4, 0.47, 1.11) 0.1s 1 forwards normal;
+}
+
+@keyframes sticker-appear {
+  0% {
+    visibility: hidden;
+  }
+  1% {
+    filter: blur(8px);
+    transform: scale(0);
+  }
+  85% {
+    filter: blur(0px);
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .title {

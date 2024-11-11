@@ -4,7 +4,7 @@ import { createTRPCClient, httpBatchLink } from '@trpc/client'
 export const client = createTRPCClient<AppRouter>({
   links: [
     httpBatchLink({
-      url: import.meta.env.VITE_PUBLIC_API_BASE_URL,
+      url: `${import.meta.env.VITE_PUBLIC_API_BASE_URL}/trpc`,
       headers: {
         'tma-init-data': Telegram.WebApp.initData,
       },

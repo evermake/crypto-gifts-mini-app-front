@@ -51,7 +51,9 @@ onMounted(() => {
     instance = new DotLottieWorker({ canvas: canvas.value })
   }
 
-  instance.addEventListener('load', () => void emit('ready'))
+  instance.addEventListener('play', () => {
+    emit('ready')
+  })
 
   lottie.value = instance
 })

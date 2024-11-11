@@ -1,14 +1,17 @@
 <script setup lang="ts">
+import { useRouter } from 'vue-router'
 import PageTitle from '~/components/PageTitle.vue'
 import Sticker from '~/components/Sticker.vue'
+import TgPattern from '~/components/TgPattern.vue'
 import { availabilityText, useGiftKinds } from '~/composables/gifts'
 import { priceToText } from '~/utils/text'
 
-defineEmits<{
-  choose: [kindId: string]
-}>()
-
+const router = useRouter()
 const { kinds } = useGiftKinds()
+
+function handleChoose(kindId: string) {
+  router.push(`/store/${kindId}`)
+}
 </script>
 
 <template>
@@ -26,6 +29,7 @@ const { kinds } = useGiftKinds()
         :key="kind.id"
         :class="[$style.gift, `gift-gradient-${kind.color}`]"
       >
+        <TgPattern :class="$style.pattern" />
         <span :class="$style.availability">
           {{ availabilityText(kind, $t) }}
         </span>
@@ -33,7 +37,7 @@ const { kinds } = useGiftKinds()
         <h3 :class="$style.name">
           {{ kind.name }}
         </h3>
-        <button :class="$style.buyBtn" @click="$emit('choose', kind.id)">
+        <button :class="$style.buyBtn" @click="handleChoose(kind.id)">
           <span class="icon" :class="[`i-${kind.price.asset.toLowerCase()}`]" />
           <span>{{ priceToText(kind.price) }}</span>
         </button>
@@ -75,6 +79,17 @@ const { kinds } = useGiftKinds()
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.pattern {
+  z-index: -1;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .availability {

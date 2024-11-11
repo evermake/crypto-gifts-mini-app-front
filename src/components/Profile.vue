@@ -1,20 +1,23 @@
 <script setup lang="ts">
 import { useQuery } from '@tanstack/vue-query'
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { client } from '~/api'
 import Avatar from '~/components/Avatar.vue'
 import Sticker from '~/components/Sticker.vue'
 import type { Option } from '~/components/Switch.vue'
 import Switch from '~/components/Switch.vue'
 import { availabilityText, useExtendWithKind } from '~/composables/gifts'
-import { en, ru } from '~/locales'
 import { useAppearance } from '~/utils/appearance'
 import { useLocalization } from '~/utils/localization'
+import EmptyBlock from './EmptyBlock.vue'
 
 const props = defineProps<{
   me?: boolean
   userId?: string
 }>()
+
+const router = useRouter()
 
 const userId = computed(() => {
   if (props.me)
@@ -53,7 +56,7 @@ const gifts = computed(() => (
 ))
 
 const { colorMode, setColorMode } = useAppearance()
-const { locale, setLocale } = useLocalization()
+const { localeKey, setLocale } = useLocalization()
 
 const themeOption = computed<Option>({
   get: () => {
@@ -65,12 +68,16 @@ const themeOption = computed<Option>({
 })
 const localeOption = computed<Option>({
   get: () => {
-    return locale.value === ru ? 'right' : 'left'
+    return localeKey.value === 'ru' ? 'right' : 'left'
   },
   set: (newOption) => {
-    setLocale(newOption === 'left' ? en : ru)
+    setLocale(newOption === 'left' ? 'en' : 'ru')
   },
 })
+
+function openStore() {
+  router.replace('/store')
+}
 </script>
 
 <template>
@@ -95,7 +102,10 @@ const localeOption = computed<Option>({
     </div>
 
     <div :class="$style.profile">
-      <Avatar :top="10101" />
+      <Avatar
+        top="—"
+        :user-id="userData?.id"
+      />
       <div :class="$style.titles">
         <h1 :class="$style.title">
           {{ userData?.name }}
@@ -107,8 +117,15 @@ const localeOption = computed<Option>({
       </div>
     </div>
 
-    <!-- TODO: Implement virtualization. -->
-    <div :class="$style.gifts">
+    <div v-if="me && gifts && gifts.length === 0" :class="$style.emptyWrapper">
+      <EmptyBlock
+        :title="$t.pages.profile.noGifts"
+        :action-label="$t.pages.profile.openStore"
+        @action="openStore"
+      />
+    </div>
+    <div v-else-if="gifts" :class="$style.gifts">
+      <!-- TODO: Implement virtualization. -->
       <div v-for="gift in gifts" :key="gift.id" :class="$style.gift">
         <!-- TODO: Add avatar. -->
         <span gift-availability>
@@ -126,6 +143,10 @@ const localeOption = computed<Option>({
 <style module lang="scss">
 .page {
   position: relative;
+}
+
+.emptyWrapper {
+  padding: 24px 16px;
 }
 
 .switches {

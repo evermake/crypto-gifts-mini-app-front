@@ -16,8 +16,10 @@ const isStar = computed(() => {
   return false
 })
 
-const svgPath = computed(() => props.id ? `/stickers/${props.id}.svg` : null)
-const lottiePath = computed(() => props.id ? `/stickers/${props.id}.json` : null)
+let baseUrl = import.meta.env.BASE_URL
+baseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl
+const svgPath = computed(() => props.id ? `${baseUrl}/stickers/${props.id}.svg` : null)
+const lottiePath = computed(() => props.id ? `${baseUrl}/stickers/${props.id}.json` : null)
 const lottieUrl = computed(() => (
   lottiePath.value
     ? new URL(lottiePath.value, document.baseURI).href

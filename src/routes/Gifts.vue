@@ -1,12 +1,20 @@
 <script setup lang="ts">
 import { useQuery } from '@tanstack/vue-query'
-import { computed } from 'vue'
+import { computed, shallowRef, watchEffect } from 'vue'
+import { useRouter } from 'vue-router'
+import type { SendableGift } from '~/api'
 import { client } from '~/api'
 import EmptyBlock from '~/components/EmptyBlock.vue'
+import GiftSheet from '~/components/GiftSheet.vue'
 import PageTitle from '~/components/PageTitle.vue'
 import Sticker from '~/components/Sticker.vue'
+import type { WithKind } from '~/composables/gifts'
 import { useExtendWithKind } from '~/composables/gifts'
+import { useLocale } from '~/utils/localization'
+import { haptic } from '~/utils/tma'
 
+const t = useLocale()
+const router = useRouter()
 const { data: giftsRaw } = useQuery({
   queryKey: ['my-sendable-gifts'],
   queryFn: async () => {
@@ -16,7 +24,50 @@ const { data: giftsRaw } = useQuery({
 const extendWithKind = useExtendWithKind()
 const gifts = computed(() => giftsRaw.value?.map(extendWithKind))
 
-function openStore() {}
+const chosenGift = shallowRef<null | WithKind<SendableGift>>(null)
+
+function handleChoose(giftId: string) {
+  const gift = gifts.value?.find(({ id }) => giftId === id)
+  if (!gift)
+    return
+
+  haptic('light')
+  chosenGift.value = gift
+}
+
+function openStore() {
+  router.replace('/store')
+}
+
+watchEffect((onCleanup) => {
+  if (chosenGift.value) {
+    const sendToken = chosenGift.value.sendToken
+    const handleSend = () => {
+      // TODO: add try catch
+      ((window as any).Telegram.WebView).postEvent(
+        'web_app_switch_inline_query',
+        false,
+        { query: sendToken, chat_types: ['users'] },
+      )
+    }
+
+    Telegram.WebApp.MainButton.onClick(handleSend)
+    Telegram.WebApp.MainButton.hideProgress()
+    Telegram.WebApp.MainButton.setParams({
+      has_shine_effect: false,
+      text: t.value.bottomButtons.sendGiftToContact,
+      is_active: true,
+      is_visible: true,
+    })
+
+    onCleanup(() => {
+      Telegram.WebApp.MainButton.offClick(handleSend)
+    })
+  }
+  else {
+    Telegram.WebApp.MainButton.hide()
+  }
+})
 </script>
 
 <template>
@@ -49,11 +100,18 @@ function openStore() {}
           {{ gift.kind.name }}
         </h5>
         <Sticker :id="gift.kind.stickerId" :class="$style.sticker" />
-        <button :class="$style.sendBtn">
+        <button :class="$style.sendBtn" @click="handleChoose(gift.id)">
           {{ $t.pages.gifts.send }}
         </button>
       </div>
     </div>
+
+    <GiftSheet
+      v-if="chosenGift"
+      :sticker-id="chosenGift.kind.stickerId"
+      :title="chosenGift.kind.name"
+      @close="chosenGift = null"
+    />
   </div>
 </template>
 
@@ -68,7 +126,7 @@ function openStore() {}
 }
 
 .gifts {
-  padding: 16px 8px 8px;
+  padding: 8px 16px 8px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-auto-rows: 1fr;

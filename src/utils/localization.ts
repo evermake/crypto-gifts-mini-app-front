@@ -1,10 +1,12 @@
 import type { InjectionKey, Plugin, ShallowRef } from 'vue'
-import { inject, shallowRef } from 'vue'
-import type { Locale } from '~/locales'
+import { useLocalStorage } from '@vueuse/core'
+import { computed, inject } from 'vue'
+import { type Locale, type LocaleKey, LOCALES } from '~/locales'
 
 const LOCALE_INJECTION_KEY = Symbol('locale') as InjectionKey<{
   locale: ShallowRef<Locale>
-  setLocale: (newLocale: Locale) => void
+  localeKey: ShallowRef<LocaleKey>
+  setLocale: (newLocale: LocaleKey) => void
 }>
 
 export function useLocalization() {
@@ -16,13 +18,14 @@ export function useLocale() {
   return locale
 }
 
-export const localization: Plugin<{ defaultLocale: Locale }> = (app, options) => {
-  const locale = shallowRef(options.defaultLocale)
-  const setLocale = (newLocale: Locale) => {
-    locale.value = newLocale
+export const localization: Plugin<{ defaultLocale: LocaleKey }> = (app, options) => {
+  const localeKey = useLocalStorage<LocaleKey>('locale', options.defaultLocale)
+  const locale = computed(() => LOCALES[localeKey.value])
+  const setLocale = (newLocale: LocaleKey) => {
+    localeKey.value = newLocale
   }
 
-  app.provide(LOCALE_INJECTION_KEY, { locale, setLocale })
+  app.provide(LOCALE_INJECTION_KEY, { locale, setLocale, localeKey })
 
   app.config.globalProperties.$t = new Proxy(locale, {
     get: (target, key) => {

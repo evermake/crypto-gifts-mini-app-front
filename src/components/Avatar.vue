@@ -1,13 +1,24 @@
 <script setup lang="ts">
-defineProps<{
-  top?: number
+import { computed } from 'vue'
+
+const props = defineProps<{
+  userId?: string
+  top?: string
 }>()
+
+const avatarUrl = computed(() => (
+  props.userId
+    ? `${import.meta.env.VITE_PUBLIC_API_BASE_URL}/avatars/${props.userId}`
+    : null
+))
 </script>
 
 <template>
   <div :class="[$style.avatar, top != null && $style.withBadge]">
-    <div :class="$style.pic" />
-    <span v-if="top != null" :class="$style.badge">{{ `#${top}` }}</span>
+    <div :class="$style.pic">
+      <img v-if="avatarUrl" :src="avatarUrl" alt="">
+    </div>
+    <span v-if="top != null" :class="$style.badge">{{ top }}</span>
   </div>
 </template>
 

@@ -1,14 +1,30 @@
 <script setup lang="ts">
 import type { Tab } from './types'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import TabBar from './components/TabBar.vue'
-import GiftKindInfo from './pages/GiftKindInfo.vue'
-import Gifts from './pages/Gifts.vue'
-import Profile from './pages/Profile.vue'
-import Store from './pages/Store.vue'
 
-const tab = ref<Tab>('profile')
-const selectedGiftKindId = ref<string | null>(null)
+const router = useRouter()
+
+const tab = computed({
+  get: () => {
+    switch (router.currentRoute.value.path) {
+      case '/profile': return 'profile'
+      case '/leaderboard': return 'leaderboard'
+      case '/store': return 'store'
+      case '/gifts': return 'gifts'
+    }
+    return null
+  },
+  set: (newTab: Tab) => {
+    switch (newTab) {
+      case 'store': return void router.replace('/store')
+      case 'gifts': return void router.replace('/gifts')
+      case 'leaderboard': return void router.replace('/leaderboard')
+      case 'profile': return void router.replace('/profile')
+    }
+  },
+})
 
 onMounted(() => {
   Telegram.WebApp.ready()
@@ -20,10 +36,7 @@ onMounted(() => {
 <template>
   <div :class="$style.root">
     <div :class="$style.page">
-      <GiftKindInfo v-if="selectedGiftKindId" :kind-id="selectedGiftKindId" />
-      <Store v-else-if="tab === 'store'" @choose="(id) => selectedGiftKindId = id" />
-      <Gifts v-else-if="tab === 'gifts'" />
-      <Profile v-else-if="tab === 'profile'" me />
+      <RouterView />
     </div>
     <TabBar v-model:tab="tab" :class="$style.tabbar" />
   </div>

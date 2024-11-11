@@ -13,6 +13,8 @@ export default ((): Locale => ({
   pages: {
     profile: {
       giftsReceived: (n: number) => `${spacedNumber(n)} ${pluralizeRu(n, 'подарок получен', 'подарка получено', 'подарков получено')}`,
+      openStore: 'Открыть магазин',
+      noGifts: 'Вы можете купить подарок, чтобы получить подарок в ответ.',
     },
 
     gifts: {
@@ -37,5 +39,12 @@ export default ((): Locale => ({
   },
   misc: {
     of: 'из',
+  },
+  bottomButtons: {
+    buyGift: 'Купить подарок',
+    sendGiftToContact: 'Отправить подарок',
+  },
+  popups: {
+    failedPurchaseGift: 'Не удалось купить подарок',
   },
 }))()

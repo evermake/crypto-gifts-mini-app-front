@@ -12,6 +12,8 @@ export default {
   pages: {
     profile: {
       giftsReceived: (n: number) => `${spacedNumber(n)} ${pluralizeEn(n, 'gift', 'gifts')} received`,
+      noGifts: 'You can buy a gift to receive a gift in return.',
+      openStore: 'Open Store',
     },
 
     gifts: {
@@ -33,6 +35,13 @@ export default {
     date: 'Date',
     price: 'Price',
     availability: 'Availability',
+  },
+  bottomButtons: {
+    buyGift: 'Buy a Gift',
+    sendGiftToContact: 'Send Gift to Contact',
+  },
+  popups: {
+    failedPurchaseGift: 'Failed to purchase a gift',
   },
   misc: {
     of: 'of',

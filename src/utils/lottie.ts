@@ -1,7 +1,7 @@
 import { getCpuCount } from './browser'
 
 let workerCounter = 1
-const cpuCount = Math.min(getCpuCount(), 4)
+const concurrency = Math.min(getCpuCount() - 1, 4)
 export function getLottieWorkerId() {
-  return `worker-${(workerCounter++) % cpuCount}`
+  return `worker-${(workerCounter++) % concurrency}`
 }

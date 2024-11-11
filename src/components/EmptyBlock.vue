@@ -18,7 +18,10 @@ defineEmits<{
     <h3 :class="$style.title">
       {{ title }}
     </h3>
-    <button :class="$style.action">
+    <button
+      :class="$style.action"
+      @click="$emit('action')"
+    >
       {{ actionLabel }}
     </button>
   </div>

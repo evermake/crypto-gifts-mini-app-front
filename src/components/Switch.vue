@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref, useTemplateRef, watch } from 'vue'
+import { haptic } from '~/utils/tma'
 
 export type Option = 'left' | 'right'
 
@@ -9,9 +10,7 @@ const option = defineModel<Option>('option', { default: 'left' as Option })
 const touched = ref(false)
 
 watch(option, () => {
-  setTimeout(() => {
-    Telegram.WebApp.HapticFeedback.impactOccurred('soft')
-  }, 75)
+  setTimeout(() => void haptic('soft'), 75)
 })
 
 function handleClick() {
