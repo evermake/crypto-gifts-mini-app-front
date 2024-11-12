@@ -1,19 +1,18 @@
 <script setup lang="ts">
 import { useQuery } from '@tanstack/vue-query'
-import { computed, shallowRef, watchEffect } from 'vue'
+import { computed, shallowRef } from 'vue'
 import { useRouter } from 'vue-router'
 import type { SendableGift } from '~/api'
 import { client } from '~/api'
 import EmptyBlock from '~/components/EmptyBlock.vue'
 import GiftSheet from '~/components/GiftSheet.vue'
+import MainButton from '~/components/MainButton.vue'
 import PageTitle from '~/components/PageTitle.vue'
 import Sticker from '~/components/Sticker.vue'
 import type { WithKind } from '~/composables/gifts'
 import { useExtendWithKind } from '~/composables/gifts'
-import { useLocale } from '~/utils/localization'
 import { haptic } from '~/utils/tma'
 
-const t = useLocale()
 const router = useRouter()
 const { data: giftsRaw } = useQuery({
   queryKey: ['my-sendable-gifts'],
@@ -39,35 +38,20 @@ function openStore() {
   router.replace('/store')
 }
 
-watchEffect((onCleanup) => {
+function handleSend() {
   if (chosenGift.value) {
-    const sendToken = chosenGift.value.sendToken
-    const handleSend = () => {
-      // TODO: add try catch
+    try {
       ((window as any).Telegram.WebView).postEvent(
         'web_app_switch_inline_query',
         false,
-        { query: sendToken, chat_types: ['users'] },
+        { query: chosenGift.value.sendToken, chat_types: ['users'] },
       )
     }
-
-    Telegram.WebApp.MainButton.onClick(handleSend)
-    Telegram.WebApp.MainButton.hideProgress()
-    Telegram.WebApp.MainButton.setParams({
-      has_shine_effect: false,
-      text: t.value.bottomButtons.sendGiftToContact,
-      is_active: true,
-      is_visible: true,
-    })
-
-    onCleanup(() => {
-      Telegram.WebApp.MainButton.offClick(handleSend)
-    })
+    catch (err) {
+      console.error('Failed to switch to inline query:', err)
+    }
   }
-  else {
-    Telegram.WebApp.MainButton.hide()
-  }
-})
+}
 </script>
 
 <template>
@@ -106,11 +90,25 @@ watchEffect((onCleanup) => {
       </div>
     </div>
 
-    <GiftSheet
+    <Transition name="sheet" :duration="300">
+      <GiftSheet
+        v-if="chosenGift"
+        :sticker-id="chosenGift.kind.stickerId"
+        :title="chosenGift.kind.name"
+        :rows="[
+          { label: $t.table.gift, text: chosenGift.kind.name },
+          { label: $t.table.date, date: new Date(chosenGift.purchaseDate) },
+          { label: $t.table.price, price: chosenGift.purchasePrice },
+          { label: $t.table.availability, text: `${chosenGift.order} ${$t.misc.of} ${chosenGift.kind.limit}` },
+        ]"
+        @close="chosenGift = null"
+      />
+    </Transition>
+
+    <MainButton
       v-if="chosenGift"
-      :sticker-id="chosenGift.kind.stickerId"
-      :title="chosenGift.kind.name"
-      @close="chosenGift = null"
+      :text="$t.bottomButtons.sendGiftToContact"
+      @click="handleSend"
     />
   </div>
 </template>

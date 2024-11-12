@@ -6,11 +6,13 @@ import Sticker from '~/components/Sticker.vue'
 import TgPattern from '~/components/TgPatternAsync'
 import { availabilityText, useGiftKinds } from '~/composables/gifts'
 import { priceToText } from '~/utils/text'
+import { haptic } from '~/utils/tma'
 
 const router = useRouter()
 const { kinds } = useGiftKinds()
 
 function handleChoose(kindId: string) {
+  haptic('light')
   router.push(`/store/${kindId}`)
 }
 </script>

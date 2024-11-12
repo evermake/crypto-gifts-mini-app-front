@@ -15,6 +15,7 @@
     sans-serif;
 
   --z-tabbar: 5;
+  --z-sheet: 3;
   --z-notification: 4;
 
   --tabbar-pb: 8px;
@@ -53,7 +54,7 @@
   overscroll-behavior-x: none;
 }
 
-body {
+#app {
   padding-bottom: calc(50px + var(--tabbar-pb));
 }
 

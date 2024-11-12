@@ -29,3 +29,16 @@ export function pluralizeEn(n: number, one: string, other: string) {
 export function priceToText(price: Price): string {
   return `${price.amount.replace(/\.?0+$/, '')} ${price.asset}`
 }
+
+export function dateCalendarDateShort(d: Date) {
+  const mm = (d.getMonth() + 1).toString().padStart(2, '0')
+  const dd = (d.getDate()).toString().padStart(2, '0')
+  const yy = d.getFullYear() % 2000
+  return `${dd}.${mm}.${yy}`
+}
+
+export function clockTime(d: Date) {
+  const HH = (d.getHours()).toString().padStart(2, '0')
+  const MM = (d.getMinutes()).toString().padStart(2, '0')
+  return `${HH}:${MM}`
+}

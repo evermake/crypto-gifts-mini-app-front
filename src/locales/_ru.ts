@@ -1,5 +1,5 @@
 import type { Locale } from '.'
-import { pluralizeRu, spacedNumber } from '~/utils/text'
+import { clockTime, dateCalendarDateShort, pluralizeRu, spacedNumber } from '~/utils/text'
 
 export default ((): Locale => ({
   tabbar: {
@@ -31,13 +31,15 @@ export default ((): Locale => ({
       giftInfoText: 'Купите этот подарок, чтобы подарить его другому пользователю.',
     },
   },
-  giftInfo: {
-    from: 'От',
+  table: {
+    gift: 'Подарок',
     date: 'Дата',
     price: 'Цена',
-    availability: 'Доступно',
+    availability: 'Наличие',
+    from: 'От',
   },
   misc: {
+    date: (d: Date) => `${dateCalendarDateShort(d)} at ${clockTime(d)}`,
     of: 'из',
   },
   bottomButtons: {

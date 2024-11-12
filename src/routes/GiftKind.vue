@@ -1,15 +1,16 @@
 <script lang="ts" setup>
 import { useMutation } from '@tanstack/vue-query'
-import { computed, onMounted, onUnmounted } from 'vue'
+import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { client } from '~/api'
+import MainButton from '~/components/MainButton.vue'
 import RouteRoot from '~/components/RouteRoot.vue'
 import Sticker from '~/components/Sticker.vue'
 import TgPattern from '~/components/TgPatternAsync'
 import { availabilityText, useGiftKind } from '~/composables/gifts'
 import { useLocale } from '~/utils/localization'
 import { priceToText } from '~/utils/text'
-import { haptic } from '~/utils/tma'
+import { haptic, tryTo } from '~/utils/tma'
 
 const t = useLocale()
 const route = useRoute()
@@ -17,7 +18,6 @@ const router = useRouter()
 const kindId = computed(() => route.params.kindId as string)
 const { mutate, isPending: mutating } = useMutation({
   mutationFn: async (kindId: string) => {
-    Telegram.WebApp.MainButton.showProgress()
     return await client.requestPurchaseGift.mutate({ kindId })
   },
   onSuccess({ giftId: _giftId, purchaseLink }) {
@@ -33,14 +33,13 @@ const { mutate, isPending: mutating } = useMutation({
   },
   onError: (error) => {
     haptic('error')
-    Telegram.WebApp.showPopup({
-      title: t.value.popups.failedPurchaseGift,
-      message: error.message.slice(0, 255),
-      buttons: [{ type: 'close' }],
+    tryTo((app) => {
+      app.showPopup({
+        title: t.value.popups.failedPurchaseGift,
+        message: error.message.slice(0, 255),
+        buttons: [{ type: 'close' }],
+      })
     })
-  },
-  onSettled: () => {
-    Telegram.WebApp.MainButton.hideProgress()
   },
 })
 
@@ -52,32 +51,6 @@ function handleBuy() {
     mutate(kindId.value)
   }
 }
-function handleBack() {
-  router.go(-1)
-}
-
-onMounted(() => {
-  Telegram.WebApp.SecondaryButton.hide()
-
-  Telegram.WebApp.MainButton.onClick(handleBuy)
-  Telegram.WebApp.MainButton.setParams({
-    text: t.value.bottomButtons.buyGift,
-    has_shine_effect: true,
-    is_active: true,
-    is_visible: true,
-  })
-
-  Telegram.WebApp.BackButton.onClick(handleBack)
-  Telegram.WebApp.BackButton.show()
-})
-
-onUnmounted(() => {
-  Telegram.WebApp.MainButton.hide()
-  Telegram.WebApp.MainButton.offClick(handleBuy)
-
-  Telegram.WebApp.BackButton.hide()
-  Telegram.WebApp.BackButton.offClick(handleBack)
-})
 </script>
 
 <template>
@@ -109,6 +82,13 @@ onUnmounted(() => {
     <div :class="$style.actions">
       <!-- TODO -->
     </div>
+    <MainButton
+      :text="$t.bottomButtons.buyGift"
+      :loading="mutating"
+      active
+      shining
+      @click="handleBuy"
+    />
   </RouteRoot>
 </template>
 
@@ -182,6 +162,7 @@ onUnmounted(() => {
     letter-spacing: -0.00625rem;
   }
   .subtitle {
+    padding-right: 32px;
     color: var(--text-secondary);
     font-size: 1.0625rem;
     font-style: normal;

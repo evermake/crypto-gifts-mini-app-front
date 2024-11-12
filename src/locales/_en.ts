@@ -1,4 +1,4 @@
-import { pluralizeEn, spacedNumber } from '~/utils/text'
+import { clockTime, dateCalendarDateShort, pluralizeEn, spacedNumber } from '~/utils/text'
 
 export default {
   tabbar: {
@@ -30,11 +30,12 @@ export default {
       giftInfoText: 'Purchase this gift for the opportunity to give it to another user.',
     },
   },
-  giftInfo: {
-    from: 'From',
+  table: {
+    gift: 'Gift',
     date: 'Date',
     price: 'Price',
     availability: 'Availability',
+    from: 'From',
   },
   bottomButtons: {
     buyGift: 'Buy a Gift',
@@ -44,6 +45,7 @@ export default {
     failedPurchaseGift: 'Failed to purchase a gift',
   },
   misc: {
+    date: (d: Date) => `${dateCalendarDateShort(d)} at ${clockTime(d)}`,
     of: 'of',
   },
 }

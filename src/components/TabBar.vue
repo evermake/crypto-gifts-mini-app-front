@@ -51,6 +51,10 @@ const tab = defineModel<Tab | null>('tab', { default: null })
   }
 }
 
+:global(:root.with-bottom-bar) .tabbar {
+  display: none;
+}
+
 .button {
   flex: 1 0;
   height: 42px;
