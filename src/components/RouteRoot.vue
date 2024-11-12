@@ -22,6 +22,9 @@ onBeforeRouteLeave((to) => {
       root.value.style.height = `${height}px`
     }
   }
+  else {
+    to.meta.willFade = false
+  }
 })
 
 onActivated(() => {

@@ -31,7 +31,10 @@ const tab = computed({
   <div :class="$style.root">
     <div :class="$style.page">
       <RouterView v-slot="{ Component, route }">
-        <Transition :name="route.meta.willFade ? 'page-fade' : undefined">
+        <Transition
+          :mode="route.meta.willFade ? 'default' : 'out-in'"
+          :name="route.meta.willFade ? 'page-fade' : undefined"
+        >
           <KeepAlive>
             <component :is="Component" />
           </KeepAlive>
@@ -58,14 +61,12 @@ const tab = computed({
 <style>
 .page-fade-enter-from,
 .page-fade-leave-to {
-  position: fixed;
   filter: blur(12px);
   opacity: 0;
   transform: scale(0.8);
 }
 .page-fade-enter-active,
 .page-fade-leave-active {
-  position: fixed;
   transition:
     opacity 300ms ease,
     filter 300ms ease,
@@ -73,7 +74,6 @@ const tab = computed({
 }
 .page-fade-enter-to,
 .page-fade-leave-from {
-  position: fixed;
   filter: blur(0);
   opacity: 1;
   transform: scale(1);
