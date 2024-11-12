@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES2020",
     "jsx": "preserve",
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "lib": ["ES2020", "DOM", "DOM.Iterable", "ESNext.Promise"],
     "moduleDetection": "force",
     "useDefineForClassFields": true,
     "baseUrl": ".",

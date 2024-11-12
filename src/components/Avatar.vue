@@ -1,24 +1,28 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import UserPic from './UserPic.vue'
 
 const props = defineProps<{
   userId?: string
-  top?: string
+  name?: string
+  rank?: number
 }>()
 
-const avatarUrl = computed(() => (
-  props.userId
-    ? `${import.meta.env.VITE_PUBLIC_API_BASE_URL}/avatars/${props.userId}`
-    : null
-))
+const userId = computed(() => props.userId)
+
+// TODO: Show gradient and letters.
 </script>
 
 <template>
-  <div :class="[$style.avatar, top != null && $style.withBadge]">
-    <div :class="$style.pic">
-      <img v-if="avatarUrl" :src="avatarUrl" alt="">
-    </div>
-    <span v-if="top != null" :class="$style.badge">{{ top }}</span>
+  <div :class="[$style.avatar, rank != null && $style.withBadge]">
+    <UserPic
+      :class="$style.pic"
+      :user-id="userId"
+      :name="name"
+    />
+    <span v-if="rank != null" :class="[$style.badge, rank === 1 && $style.top1]">
+      {{ typeof rank === 'number' ? `#${rank}` : '—' }}
+    </span>
   </div>
 </template>
 
@@ -33,16 +37,12 @@ const avatarUrl = computed(() => (
   }
 }
 
-.pic,
 .badge {
   border-radius: 9999px;
 }
 
 .pic {
   width: 100%;
-  aspect-ratio: 1;
-  background: #999;
-  overflow: hidden;
 }
 
 .badge {
@@ -58,5 +58,9 @@ const avatarUrl = computed(() => (
   line-height: 1.375rem;
   letter-spacing: 0.00625em;
   padding: 0 8px;
+
+  &.top1 {
+    background: var(--gold);
+  }
 }
 </style>

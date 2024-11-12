@@ -3,14 +3,16 @@ import { useMutation } from '@tanstack/vue-query'
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { client } from '~/api'
-import MainButton from '~/components/MainButton.vue'
+import BottomBarButton from '~/components/BottomBarButton.vue'
 import RouteRoot from '~/components/RouteRoot.vue'
 import Sticker from '~/components/Sticker.vue'
 import TgPattern from '~/components/TgPatternAsync'
 import { availabilityText, useGiftKind } from '~/composables/gifts'
 import { useLocale } from '~/utils/localization'
+import { PURCHASED_GIFT_STORAGE_KEY } from '~/utils/misc'
+import { waitForPurchase } from '~/utils/monitor-purchase'
 import { priceToText } from '~/utils/text'
-import { haptic, tryTo } from '~/utils/tma'
+import { showError } from '~/utils/tma'
 
 const t = useLocale()
 const route = useRoute()
@@ -20,8 +22,16 @@ const { mutate, isPending: mutating } = useMutation({
   mutationFn: async (kindId: string) => {
     return await client.requestPurchaseGift.mutate({ kindId })
   },
-  onSuccess({ giftId: _giftId, purchaseLink }) {
-    // TODO: Begin tracking payment.
+  onSuccess({ giftId, purchaseLink }) {
+    waitForPurchase(giftId)
+      .then((purchasedGift) => {
+        // FIXME: Not a clever way.
+        localStorage.setItem(PURCHASED_GIFT_STORAGE_KEY, JSON.stringify(purchasedGift))
+        router.push({ name: 'gift-purchased' })
+      })
+      .catch((err) => {
+        console.error('Failed to wait for purchase:', err)
+      })
     try {
       Telegram.WebApp.openTelegramLink(purchaseLink)
     }
@@ -29,16 +39,11 @@ const { mutate, isPending: mutating } = useMutation({
       console.error('Failed to open purchase link', err)
       location.href = purchaseLink
     }
-    router.replace('/store')
   },
   onError: (error) => {
-    haptic('error')
-    tryTo((app) => {
-      app.showPopup({
-        title: t.value.popups.failedPurchaseGift,
-        message: error.message.slice(0, 255),
-        buttons: [{ type: 'close' }],
-      })
+    showError({
+      title: t.value.popups.failedPurchaseGift,
+      message: error.message,
     })
   },
 })
@@ -82,7 +87,7 @@ function handleBuy() {
     <div :class="$style.actions">
       <!-- TODO -->
     </div>
-    <MainButton
+    <BottomBarButton
       :text="$t.bottomButtons.buyGift"
       :loading="mutating"
       active

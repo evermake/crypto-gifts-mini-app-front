@@ -27,7 +27,7 @@ export function pluralizeEn(n: number, one: string, other: string) {
 }
 
 export function priceToText(price: Price): string {
-  return `${price.amount.replace(/\.?0+$/, '')} ${price.asset}`
+  return `${Number.parseFloat(Number.parseFloat(price.amount).toFixed(4))} ${price.asset}`
 }
 
 export function dateCalendarDateShort(d: Date) {

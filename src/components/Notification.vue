@@ -1,5 +1,8 @@
 <script lang="ts" setup>
+import Sticker from './Sticker.vue'
+
 defineProps<{
+  stickerId?: string
   title?: string
   description?: string
 }>()
@@ -8,15 +11,12 @@ defineProps<{
 <template>
   <div :class="$style.notification">
     <div :class="$style.leading">
-      <slot name="leading" />
+      <Sticker :id="stickerId" :class="$style.sticker" />
       <div :class="$style.text">
-        <span v-if="title" :class="$style.title">{{ title }}</span>
-        <span v-if="description">{{ description }}</span>
+        <span :class="$style.title">{{ title }}</span>
+        <span :class="$style.description">{{ description }}</span>
       </div>
     </div>
-    <slot name="trailing">
-      <span />
-    </slot>
   </div>
 </template>
 
@@ -30,14 +30,21 @@ defineProps<{
   border-radius: 14px;
   background: var(--notification-bg);
   backdrop-filter: blur(10px);
-  // animation: 500ms cubic-bezier(0.3, 0, 0.3, 1.15) 0s 1 forwards slide-up;
-  // animation: 350ms ease-in 2s 1 forwards disappear;
+  animation:
+    500ms cubic-bezier(0.3, 0, 0.3, 1.15) 0s 1 forwards slide-up,
+    350ms ease-in 5s 1 forwards disappear;
 
   position: fixed;
-  bottom: 74px;
+  bottom: 16px;
   left: 16px;
   right: 16px;
   z-index: var(--z-notification);
+}
+
+.sticker {
+  height: 28px;
+  width: 28px;
+  margin-right: 12px;
 }
 
 @keyframes disappear {
@@ -47,7 +54,7 @@ defineProps<{
     opacity: 1;
   }
   100% {
-    transform: scale(0.8);
+    transform: scale(0.85);
     filter: blur(4px);
     opacity: 0;
   }
@@ -63,21 +70,30 @@ defineProps<{
 }
 
 .leading {
+  display: flex;
+  align-items: center;
 }
 
 .text {
+  color: #fff;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
+  font-family: var(--font-sf-pro);
+}
+
+.title {
   font-size: 0.875rem;
-  font-style: normal;
-  font-weight: 400;
+  font-weight: 590;
   line-height: 1.125rem;
   letter-spacing: -0.00963rem;
 }
 
-.title {
-  font-weight: 590;
+.description {
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.125rem;
+  letter-spacing: -0.00963rem;
 }
 </style>

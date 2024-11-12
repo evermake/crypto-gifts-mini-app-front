@@ -53,6 +53,7 @@ declare module "api/schemas" {
         id: z.ZodString;
         kindId: z.ZodString;
         order: z.ZodNumber;
+        senderId: z.ZodString;
         purchasePrice: z.ZodObject<{
             asset: z.ZodEnum<["TON", "USDT", "ETH"]>;
             amount: z.ZodString;
@@ -68,6 +69,7 @@ declare module "api/schemas" {
         id: string;
         kindId: string;
         order: number;
+        senderId: string;
         purchasePrice: {
             asset: "TON" | "USDT" | "ETH";
             amount: string;
@@ -77,6 +79,7 @@ declare module "api/schemas" {
         id: string;
         kindId: string;
         order: number;
+        senderId: string;
         purchasePrice: {
             asset: "TON" | "USDT" | "ETH";
             amount: string;
@@ -121,22 +124,174 @@ declare module "api/schemas" {
         purchaseDate: Date;
         sendToken: string;
     }>;
+    export type GiftStatus = z.infer<typeof GiftStatus>;
+    export const GiftStatus: z.ZodUnion<[z.ZodObject<{
+        status: z.ZodLiteral<"pending">;
+    }, "strip", z.ZodTypeAny, {
+        status: "pending";
+    }, {
+        status: "pending";
+    }>, z.ZodObject<{
+        status: z.ZodLiteral<"purchased">;
+        gift: z.ZodObject<{
+            id: z.ZodString;
+            kindId: z.ZodString;
+            order: z.ZodNumber;
+            purchaseDate: z.ZodDate;
+            purchasePrice: z.ZodObject<{
+                asset: z.ZodEnum<["TON", "USDT", "ETH"]>;
+                amount: z.ZodString;
+            }, "strip", z.ZodTypeAny, {
+                asset: "TON" | "USDT" | "ETH";
+                amount: string;
+            }, {
+                asset: "TON" | "USDT" | "ETH";
+                amount: string;
+            }>;
+            sendToken: z.ZodString;
+        }, "strip", z.ZodTypeAny, {
+            id: string;
+            kindId: string;
+            order: number;
+            purchasePrice: {
+                asset: "TON" | "USDT" | "ETH";
+                amount: string;
+            };
+            purchaseDate: Date;
+            sendToken: string;
+        }, {
+            id: string;
+            kindId: string;
+            order: number;
+            purchasePrice: {
+                asset: "TON" | "USDT" | "ETH";
+                amount: string;
+            };
+            purchaseDate: Date;
+            sendToken: string;
+        }>;
+    }, "strip", z.ZodTypeAny, {
+        status: "purchased";
+        gift: {
+            id: string;
+            kindId: string;
+            order: number;
+            purchasePrice: {
+                asset: "TON" | "USDT" | "ETH";
+                amount: string;
+            };
+            purchaseDate: Date;
+            sendToken: string;
+        };
+    }, {
+        status: "purchased";
+        gift: {
+            id: string;
+            kindId: string;
+            order: number;
+            purchasePrice: {
+                asset: "TON" | "USDT" | "ETH";
+                amount: string;
+            };
+            purchaseDate: Date;
+            sendToken: string;
+        };
+    }>, z.ZodObject<{
+        status: z.ZodLiteral<"sent">;
+        gift: z.ZodObject<{
+            id: z.ZodString;
+            kindId: z.ZodString;
+            order: z.ZodNumber;
+            senderId: z.ZodString;
+            purchasePrice: z.ZodObject<{
+                asset: z.ZodEnum<["TON", "USDT", "ETH"]>;
+                amount: z.ZodString;
+            }, "strip", z.ZodTypeAny, {
+                asset: "TON" | "USDT" | "ETH";
+                amount: string;
+            }, {
+                asset: "TON" | "USDT" | "ETH";
+                amount: string;
+            }>;
+            sentAt: z.ZodDate;
+        }, "strip", z.ZodTypeAny, {
+            id: string;
+            kindId: string;
+            order: number;
+            senderId: string;
+            purchasePrice: {
+                asset: "TON" | "USDT" | "ETH";
+                amount: string;
+            };
+            sentAt: Date;
+        }, {
+            id: string;
+            kindId: string;
+            order: number;
+            senderId: string;
+            purchasePrice: {
+                asset: "TON" | "USDT" | "ETH";
+                amount: string;
+            };
+            sentAt: Date;
+        }>;
+    }, "strip", z.ZodTypeAny, {
+        status: "sent";
+        gift: {
+            id: string;
+            kindId: string;
+            order: number;
+            senderId: string;
+            purchasePrice: {
+                asset: "TON" | "USDT" | "ETH";
+                amount: string;
+            };
+            sentAt: Date;
+        };
+    }, {
+        status: "sent";
+        gift: {
+            id: string;
+            kindId: string;
+            order: number;
+            senderId: string;
+            purchasePrice: {
+                asset: "TON" | "USDT" | "ETH";
+                amount: string;
+            };
+            sentAt: Date;
+        };
+    }>]>;
     export type UserOut = z.infer<typeof UserOut>;
     export const UserOut: z.ZodObject<{
         id: z.ZodString;
         name: z.ZodString;
         isPremium: z.ZodBoolean;
         receivedGiftsCount: z.ZodNumber;
+        rank: z.ZodNumber;
     }, "strip", z.ZodTypeAny, {
         id: string;
         name: string;
         isPremium: boolean;
         receivedGiftsCount: number;
+        rank: number;
     }, {
         id: string;
         name: string;
         isPremium: boolean;
         receivedGiftsCount: number;
+        rank: number;
+    }>;
+    export type Pagination = z.infer<typeof Pagination>;
+    export const Pagination: z.ZodObject<{
+        offset: z.ZodDefault<z.ZodNumber>;
+        limit: z.ZodDefault<z.ZodNumber>;
+    }, "strip", z.ZodTypeAny, {
+        limit: number;
+        offset: number;
+    }, {
+        limit?: number | undefined;
+        offset?: number | undefined;
     }>;
 }
 declare module "common/utils" {
@@ -517,6 +672,7 @@ declare module "api/context" {
     import { type Locale } from "common/locales/index";
     import type { Logger } from "common/logging";
     export type Context = {
+        config: Config;
         logger: Logger;
         db: Database;
         cryptoPay: CryptoPay;
@@ -557,6 +713,18 @@ declare module "api/trpc" {
             giftKinds: import("mongodb").Collection<import("common/db/documents").GiftKind>;
             giftActions: import("mongodb").Collection<import("common/db/documents").GiftAction>;
             giftReceiveTokens: import("mongodb").Collection<import("common/db/documents").GiftReceiveToken>;
+        };
+        config: {
+            ENVIRONMENT: "dev" | "prod";
+            LISTEN_PORT: number;
+            LISTEN_HOST: string;
+            CORS_ALLOWED_ORIGINS: string[];
+            BOT_TOKEN: string;
+            MONGO_URL: string;
+            CRYPTO_PAY_TOKEN: string;
+            CRYPTO_PAY_BASE_URL: string;
+            MINI_APP_URL: string;
+            MINI_APP_SHORT_NAME: string;
         };
         cryptoPay: import("common/crypto-pay").CryptoPay;
         tgApi: import("grammy").Api<import("grammy").RawApi>;
@@ -619,6 +787,7 @@ declare module "api/router" {
                 name: string;
                 isPremium: boolean;
                 receivedGiftsCount: number;
+                rank: number;
             };
         }>;
         user: import("@trpc/server").TRPCQueryProcedure<{
@@ -630,6 +799,7 @@ declare module "api/router" {
                 name: string;
                 isPremium: boolean;
                 receivedGiftsCount: number;
+                rank: number;
             };
         }>;
         giftKinds: import("@trpc/server").TRPCQueryProcedure<{
@@ -659,19 +829,38 @@ declare module "api/router" {
                 sendToken: string;
             }[];
         }>;
-        gift: import("@trpc/server").TRPCQueryProcedure<{
+        myGiftStatus: import("@trpc/server").TRPCQueryProcedure<{
             input: {
                 giftId: string;
             };
             output: {
-                id: string;
-                kindId: string;
-                order: number;
-                purchasePrice: {
-                    asset: "TON" | "USDT" | "ETH";
-                    amount: string;
+                status: "pending";
+            } | {
+                status: "purchased";
+                gift: {
+                    id: string;
+                    kindId: string;
+                    order: number;
+                    purchasePrice: {
+                        asset: "TON" | "USDT" | "ETH";
+                        amount: string;
+                    };
+                    purchaseDate: Date;
+                    sendToken: string;
                 };
-                sentAt: Date;
+            } | {
+                status: "sent";
+                gift: {
+                    id: string;
+                    kindId: string;
+                    order: number;
+                    senderId: string;
+                    purchasePrice: {
+                        asset: "TON" | "USDT" | "ETH";
+                        amount: string;
+                    };
+                    sentAt: Date;
+                };
             };
         }>;
         requestPurchaseGift: import("@trpc/server").TRPCMutationProcedure<{
@@ -691,6 +880,7 @@ declare module "api/router" {
                 id: string;
                 kindId: string;
                 order: number;
+                senderId: string;
                 purchasePrice: {
                     asset: "TON" | "USDT" | "ETH";
                     amount: string;
@@ -709,6 +899,7 @@ declare module "api/router" {
                 id: string;
                 kindId: string;
                 order: number;
+                senderId: string;
                 purchasePrice: {
                     asset: "TON" | "USDT" | "ETH";
                     amount: string;
@@ -719,6 +910,19 @@ declare module "api/router" {
         myActions: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
             output: never;
+        }>;
+        leaderboard: import("@trpc/server").TRPCQueryProcedure<{
+            input: {
+                limit?: number | undefined;
+                offset?: number | undefined;
+            };
+            output: {
+                id: string;
+                name: string;
+                isPremium: boolean;
+                receivedGiftsCount: number;
+                rank: number;
+            }[];
         }>;
     }>;
 }

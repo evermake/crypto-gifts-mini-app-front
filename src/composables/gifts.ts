@@ -98,12 +98,16 @@ export function useMyGifts() {
 export type WithKind<T> = T & { kind: GiftKindInternal }
 export function useExtendWithKind() {
   const { kindsByIds } = useGiftKinds()
-  return <T extends { kindId: string }>(obj: T): WithKind<T> => {
-    return ({
-      ...obj,
-      kind: kindsByIds.value.get(obj.kindId) ?? FALLBACK_KIND,
-    })
-  }
+
+  return computed(() => {
+    const map = kindsByIds.value
+    return <T extends { kindId: string }>(obj: T): WithKind<T> => {
+      return ({
+        ...obj,
+        kind: map.get(obj.kindId) ?? FALLBACK_KIND,
+      })
+    }
+  })
 }
 
 function colorByKindName(name: string) {

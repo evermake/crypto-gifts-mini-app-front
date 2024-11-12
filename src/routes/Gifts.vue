@@ -4,9 +4,9 @@ import { computed, shallowRef } from 'vue'
 import { useRouter } from 'vue-router'
 import type { SendableGift } from '~/api'
 import { client } from '~/api'
+import BottomBarButton from '~/components/BottomBarButton.vue'
 import EmptyBlock from '~/components/EmptyBlock.vue'
 import GiftSheet from '~/components/GiftSheet.vue'
-import MainButton from '~/components/MainButton.vue'
 import PageTitle from '~/components/PageTitle.vue'
 import Sticker from '~/components/Sticker.vue'
 import type { WithKind } from '~/composables/gifts'
@@ -21,7 +21,7 @@ const { data: giftsRaw } = useQuery({
   },
 })
 const extendWithKind = useExtendWithKind()
-const gifts = computed(() => giftsRaw.value?.map(extendWithKind))
+const gifts = computed(() => giftsRaw.value?.map(extendWithKind.value))
 
 const chosenGift = shallowRef<null | WithKind<SendableGift>>(null)
 
@@ -94,7 +94,7 @@ function handleSend() {
       <GiftSheet
         v-if="chosenGift"
         :sticker-id="chosenGift.kind.stickerId"
-        :title="chosenGift.kind.name"
+        :title="$t.pages.gifts.sendGift"
         :rows="[
           { label: $t.table.gift, text: chosenGift.kind.name },
           { label: $t.table.date, date: new Date(chosenGift.purchaseDate) },
@@ -105,7 +105,7 @@ function handleSend() {
       />
     </Transition>
 
-    <MainButton
+    <BottomBarButton
       v-if="chosenGift"
       :text="$t.bottomButtons.sendGiftToContact"
       @click="handleSend"

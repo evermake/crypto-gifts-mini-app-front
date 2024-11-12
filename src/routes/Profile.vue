@@ -1,16 +1,21 @@
 <script setup lang="ts">
 import { useQuery } from '@tanstack/vue-query'
-import { computed } from 'vue'
+import { computed, shallowRef } from 'vue'
 import { useRouter } from 'vue-router'
+import type { SentGift } from '~/api'
 import { client } from '~/api'
 import Avatar from '~/components/Avatar.vue'
+import BottomBarButton from '~/components/BottomBarButton.vue'
+import EmptyBlock from '~/components/EmptyBlock.vue'
+import GiftSheet from '~/components/GiftSheet.vue'
+import RouteRoot from '~/components/RouteRoot.vue'
 import Sticker from '~/components/Sticker.vue'
 import type { Option } from '~/components/Switch.vue'
 import Switch from '~/components/Switch.vue'
+import type { WithKind } from '~/composables/gifts'
 import { availabilityText, useExtendWithKind } from '~/composables/gifts'
 import { useAppearance } from '~/utils/appearance'
 import { useLocalization } from '~/utils/localization'
-import EmptyBlock from './EmptyBlock.vue'
 
 const props = defineProps<{
   me?: boolean
@@ -18,6 +23,8 @@ const props = defineProps<{
 }>()
 
 const router = useRouter()
+
+const chosenGift = shallowRef<WithKind<SentGift> | null>(null)
 
 const userId = computed(() => {
   if (props.me)
@@ -51,7 +58,7 @@ const { data: giftsRaw } = useQuery({
 const extendWithKind = useExtendWithKind()
 const gifts = computed(() => (
   giftsRaw.value
-    ? giftsRaw.value.map(extendWithKind)
+    ? giftsRaw.value.map(extendWithKind.value)
     : null
 ))
 
@@ -81,7 +88,9 @@ function openStore() {
 </script>
 
 <template>
-  <div :class="$style.page">
+  <RouteRoot
+    :should-fade="(to) => to.name === 'leaderboard'"
+  >
     <div v-if="isMyPage" :class="$style.switches">
       <Switch v-model:option="themeOption">
         <template #left>
@@ -103,7 +112,8 @@ function openStore() {
 
     <div :class="$style.profile">
       <Avatar
-        top="—"
+        :rank="userData?.rank"
+        :name="userData?.name"
         :user-id="userData?.id"
       />
       <div :class="$style.titles">
@@ -126,7 +136,12 @@ function openStore() {
     </div>
     <div v-else-if="gifts" :class="$style.gifts">
       <!-- TODO: Implement virtualization. -->
-      <div v-for="gift in gifts" :key="gift.id" :class="$style.gift">
+      <div
+        v-for="gift in gifts"
+        :key="gift.id"
+        :class="$style.gift"
+        @click="chosenGift = gift"
+      >
         <!-- TODO: Add avatar. -->
         <span gift-availability>
           {{ availabilityText(gift.kind, $t, true) }}
@@ -137,14 +152,31 @@ function openStore() {
         <span gift-name>{{ gift.kind.name }}</span>
       </div>
     </div>
-  </div>
+
+    <Transition name="sheet" :duration="300">
+      <GiftSheet
+        v-if="chosenGift"
+        :sticker-id="chosenGift.kind.stickerId"
+        :title="chosenGift.kind.name"
+        :rows="[
+          { label: $t.table.from, userId: chosenGift.senderId },
+          { label: $t.table.date, date: new Date(chosenGift.sentAt) },
+          { label: $t.table.price, price: chosenGift.purchasePrice },
+          { label: $t.table.availability, text: `${chosenGift.order} ${$t.misc.of} ${chosenGift.kind.limit}` },
+        ]"
+        @close="chosenGift = null"
+      />
+    </Transition>
+
+    <BottomBarButton
+      v-if="chosenGift"
+      :text="$t.bottomButtons.close"
+      @click="chosenGift = null"
+    />
+  </RouteRoot>
 </template>
 
 <style module lang="scss">
-.page {
-  position: relative;
-}
-
 .emptyWrapper {
   padding: 24px 16px;
 }
@@ -152,7 +184,7 @@ function openStore() {
 .switches {
   position: absolute;
   left: 0;
-  top: 0;
+  top: 6px;
   width: 100%;
   padding: 6px 16px;
   display: flex;

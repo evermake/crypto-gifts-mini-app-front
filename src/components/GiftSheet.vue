@@ -1,21 +1,20 @@
 <script setup lang="ts">
-import { defineAsyncComponent } from 'vue'
-import type { Price } from '~/api'
+import { useQuery } from '@tanstack/vue-query'
+import { computed, defineAsyncComponent } from 'vue'
+import { client, type Price } from '~/api'
 import { priceToText } from '~/utils/text'
 import Sticker from './Sticker.vue'
+import UserPic from './UserPic.vue'
 
 export interface Row {
   label: string
   text?: string
   price?: Price
   date?: Date
-  user?: {
-    id: string
-    name: string
-  }
+  userId?: string
 }
 
-defineProps<{
+const props = defineProps<{
   stickerId?: string | null
   title: string
   rows: Row[]
@@ -24,6 +23,23 @@ defineProps<{
 defineEmits<{
   close: []
 }>()
+
+const userIdToFetch = computed(() => {
+  for (const row of props.rows) {
+    if (row.userId)
+      return row.userId
+  }
+  return null
+})
+const { data: fetchedUser } = useQuery({
+  queryKey: ['user', userIdToFetch],
+  queryFn: async ({ queryKey }) => {
+    if (!queryKey[1])
+      throw new Error('User ID is null.')
+    return await client.user.query({ userId: queryKey[1] })
+  },
+  enabled: computed(() => Boolean(userIdToFetch.value)),
+})
 
 const StarsEffect = defineAsyncComponent(() => import('./StarsEffect.vue'))
 </script>
@@ -55,10 +71,19 @@ const StarsEffect = defineAsyncComponent(() => import('./StarsEffect.vue'))
             <span class="icon-color" :class="[`i-${row.price.asset.toLowerCase()}-color`]" />
             <span>{{ priceToText(row.price) }}</span>
           </div>
-          <div v-else-if="row.user">
-            <!-- TODO: Avatar and navigation. -->
-            {{ row.user.name }}
-          </div>
+          <RouterLink
+            v-else-if="row.userId"
+            :to="{ name: 'user', params: { userId: row.userId } }"
+            :class="$style.rowUser"
+            @click="$emit('close')"
+          >
+            <UserPic
+              :class="$style.userPic"
+              :user-id="row.userId"
+              :name="fetchedUser?.name"
+            />
+            <span>{{ fetchedUser?.name }}</span>
+          </RouterLink>
         </div>
       </div>
     </div>
@@ -282,6 +307,20 @@ const StarsEffect = defineAsyncComponent(() => import('./StarsEffect.vue'))
     font-weight: 400;
     line-height: 1.375rem;
     letter-spacing: -0.02763rem;
+  }
+}
+
+.rowUser {
+  .userPic {
+    width: 20px;
+    height: 20px;
+  }
+
+  & > :nth-child(2) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary);
   }
 }
 
