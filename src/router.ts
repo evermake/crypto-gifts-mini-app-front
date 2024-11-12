@@ -11,8 +11,8 @@ const routes: RouteRecordRaw[] = [
   { path: '/profile', component: MyProfile },
   { path: '/gifts', component: Gifts },
 
-  { path: '/store', component: Store },
-  { path: '/store/:kindId', component: GiftKind },
+  { path: '/store', component: Store, name: 'store' },
+  { path: '/store/:kindId', component: GiftKind, name: 'gift-kind' },
 ]
 
 export const router = createRouter({

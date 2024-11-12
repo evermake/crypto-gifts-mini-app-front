@@ -3,6 +3,7 @@ import { useMutation } from '@tanstack/vue-query'
 import { computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { client } from '~/api'
+import RouteRoot from '~/components/RouteRoot.vue'
 import Sticker from '~/components/Sticker.vue'
 import TgPattern from '~/components/TgPattern.vue'
 import { availabilityText, useGiftKind } from '~/composables/gifts'
@@ -69,6 +70,7 @@ onMounted(() => {
   Telegram.WebApp.BackButton.onClick(handleBack)
   Telegram.WebApp.BackButton.show()
 })
+
 onUnmounted(() => {
   Telegram.WebApp.MainButton.hide()
   Telegram.WebApp.MainButton.offClick(handleBuy)
@@ -79,7 +81,11 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div v-if="kind" :class="$style.root">
+  <RouteRoot
+    v-if="kind"
+    :class="$style.root"
+    :should-fade="(to) => to.name === 'store'"
+  >
     <div :class="$style.introImage">
       <div :class="[$style.image, `gift-gradient-${kind.color}`]">
         <TgPattern :class="$style.pattern" />
@@ -103,7 +109,7 @@ onUnmounted(() => {
     <div :class="$style.actions">
       <!-- TODO -->
     </div>
-  </div>
+  </RouteRoot>
 </template>
 
 <style lang="scss" module>

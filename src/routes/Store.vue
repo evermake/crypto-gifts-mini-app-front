@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import PageTitle from '~/components/PageTitle.vue'
+import RouteRoot from '~/components/RouteRoot.vue'
 import Sticker from '~/components/Sticker.vue'
 import TgPattern from '~/components/TgPattern.vue'
 import { availabilityText, useGiftKinds } from '~/composables/gifts'
@@ -15,7 +16,7 @@ function handleChoose(kindId: string) {
 </script>
 
 <template>
-  <div>
+  <RouteRoot :should-fade="(to) => to.name === 'gift-kind'">
     <div :class="$style.header">
       <span :class="$style.icon" class="icon i-gifts" />
       <PageTitle
@@ -43,7 +44,7 @@ function handleChoose(kindId: string) {
         </button>
       </div>
     </div>
-  </div>
+  </RouteRoot>
 </template>
 
 <style lang="scss" module>

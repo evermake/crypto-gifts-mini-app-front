@@ -36,7 +36,13 @@ onMounted(() => {
 <template>
   <div :class="$style.root">
     <div :class="$style.page">
-      <RouterView />
+      <RouterView v-slot="{ Component, route }">
+        <Transition :name="route.meta.willFade ? 'page-fade' : undefined">
+          <KeepAlive>
+            <component :is="Component" />
+          </KeepAlive>
+        </Transition>
+      </RouterView>
     </div>
     <TabBar v-model:tab="tab" :class="$style.tabbar" />
   </div>
@@ -52,5 +58,30 @@ onMounted(() => {
 }
 .page {
   flex: 1 0 auto;
+}
+</style>
+
+<style>
+.page-fade-enter-from,
+.page-fade-leave-to {
+  position: fixed;
+  filter: blur(12px);
+  opacity: 0;
+  transform: scale(0.8);
+}
+.page-fade-enter-active,
+.page-fade-leave-active {
+  position: fixed;
+  transition:
+    opacity 300ms ease,
+    filter 300ms ease,
+    transform 300ms ease;
+}
+.page-fade-enter-to,
+.page-fade-leave-from {
+  position: fixed;
+  filter: blur(0);
+  opacity: 1;
+  transform: scale(1);
 }
 </style>
