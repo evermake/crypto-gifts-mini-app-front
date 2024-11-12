@@ -3,7 +3,7 @@ import { useRouter } from 'vue-router'
 import PageTitle from '~/components/PageTitle.vue'
 import RouteRoot from '~/components/RouteRoot.vue'
 import Sticker from '~/components/Sticker.vue'
-import TgPattern from '~/components/TgPattern.vue'
+import TgPattern from '~/components/TgPatternAsync'
 import { availabilityText, useGiftKinds } from '~/composables/gifts'
 import { priceToText } from '~/utils/text'
 
