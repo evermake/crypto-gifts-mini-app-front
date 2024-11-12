@@ -87,7 +87,7 @@ onUnmounted(() => {
     :should-fade="(to) => to.name === 'store'"
   >
     <div :class="$style.introImage">
-      <div :class="[$style.image, `gift-gradient-${kind.color}`]">
+      <div :class="[$style.image, `gradient-${kind.color}`]">
         <TgPattern :class="$style.pattern" />
         <Sticker :id="kind.stickerId" :class="$style.sticker" />
       </div>
@@ -131,6 +131,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
+  background: var(--gradient);
 }
 
 .pattern {

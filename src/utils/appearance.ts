@@ -1,7 +1,8 @@
 import type { TelegramWebApps } from 'telegram-webapps'
 import { useLocalStorage } from '@vueuse/core'
 import { computed, inject, type InjectionKey, type Plugin, shallowRef, type ShallowRef, watchEffect } from 'vue'
-import { DARK_MODE_BG_COLOR, DARK_MODE_HEADER_COLOR, LIGHT_MODE_BG_COLOR, LIGHT_MODE_HEADER_COLOR } from '~/config'
+import { DARK_MODE_BG_COLOR, DARK_MODE_BOTTOM_BAR_COLOR, DARK_MODE_HEADER_COLOR, LIGHT_MODE_BG_COLOR, LIGHT_MODE_BOTTOM_BAR_COLOR, LIGHT_MODE_HEADER_COLOR } from '~/config'
+import { tryTo } from './tma'
 
 export type ColorMode = 'system' | 'dark' | 'light'
 export type ResolvedColorMode = 'dark' | 'light'
@@ -26,8 +27,9 @@ export function useColorMode() {
 }
 
 function setupMiniAppColors(colorMode: ResolvedColorMode) {
-  Telegram.WebApp.setHeaderColor(colorMode === 'dark' ? DARK_MODE_HEADER_COLOR : LIGHT_MODE_HEADER_COLOR)
-  Telegram.WebApp.setBackgroundColor(colorMode === 'dark' ? DARK_MODE_BG_COLOR : LIGHT_MODE_BG_COLOR)
+  tryTo(app => void app.setHeaderColor(colorMode === 'dark' ? DARK_MODE_HEADER_COLOR : LIGHT_MODE_HEADER_COLOR))
+  tryTo(app => void app.setBackgroundColor(colorMode === 'dark' ? DARK_MODE_BG_COLOR : LIGHT_MODE_BG_COLOR))
+  tryTo(app => void app.setBottomBarColor(colorMode === 'dark' ? DARK_MODE_BOTTOM_BAR_COLOR : LIGHT_MODE_BOTTOM_BAR_COLOR))
 }
 
 export const appearance: Plugin = (app) => {
@@ -72,9 +74,7 @@ export const appearance: Plugin = (app) => {
   const platform = Telegram.WebApp.platform
   document.documentElement.classList.add(`platform-${platform}`)
 
-  setTimeout(() => {
-    setupMiniAppColors(colorMode.value)
-  }, 0)
+  setTimeout(() => void setupMiniAppColors(colorMode.value), 0)
 
   app.provide(APPEARANCE_INJECTION_KEY, {
     colorMode,

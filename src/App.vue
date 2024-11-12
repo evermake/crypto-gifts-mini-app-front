@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Tab } from './types'
-import { computed, onMounted } from 'vue'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import TabBar from './components/TabBar.vue'
 
@@ -24,12 +24,6 @@ const tab = computed({
       case 'profile': return void router.replace('/profile')
     }
   },
-})
-
-onMounted(() => {
-  Telegram.WebApp.ready()
-  Telegram.WebApp.expand()
-  Telegram.WebApp.disableVerticalSwipes()
 })
 </script>
 

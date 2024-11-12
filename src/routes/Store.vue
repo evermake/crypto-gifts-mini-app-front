@@ -16,7 +16,10 @@ function handleChoose(kindId: string) {
 </script>
 
 <template>
-  <RouteRoot :should-fade="(to) => to.name === 'gift-kind'">
+  <RouteRoot
+    :class="$style.root"
+    :should-fade="(to) => to.name === 'gift-kind'"
+  >
     <div :class="$style.header">
       <span :class="$style.icon" class="icon i-gifts" />
       <PageTitle
@@ -28,26 +31,32 @@ function handleChoose(kindId: string) {
       <div
         v-for="kind in kinds"
         :key="kind.id"
-        :class="[$style.gift, `gift-gradient-${kind.color}`]"
+        :class="[$style.gift, `gradient-${kind.color}`]"
       >
         <TgPattern :class="$style.pattern" />
-        <span :class="$style.availability">
-          {{ availabilityText(kind, $t) }}
-        </span>
-        <Sticker :id="kind.stickerId" :class="$style.sticker" />
-        <h3 :class="$style.name">
-          {{ kind.name }}
-        </h3>
-        <button :class="$style.buyBtn" @click="handleChoose(kind.id)">
-          <span class="icon" :class="[`i-${kind.price.asset.toLowerCase()}`]" />
-          <span>{{ priceToText(kind.price) }}</span>
-        </button>
+        <div :class="$style.giftBody">
+          <span :class="$style.availability">
+            {{ availabilityText(kind, $t) }}
+          </span>
+          <Sticker :id="kind.stickerId" :class="$style.sticker" />
+          <h3 :class="$style.name">
+            {{ kind.name }}
+          </h3>
+          <button :class="$style.buyBtn" @click="handleChoose(kind.id)">
+            <span class="icon" :class="[`i-${kind.price.asset.toLowerCase()}`]" />
+            <span>{{ priceToText(kind.price) }}</span>
+          </button>
+        </div>
       </div>
     </div>
   </RouteRoot>
 </template>
 
 <style lang="scss" module>
+.root {
+  background: var(--bg);
+}
+
 .header {
   padding-top: 24px;
   padding-bottom: 16px;
@@ -63,34 +72,33 @@ function handleChoose(kindId: string) {
 }
 
 .gifts {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 12px;
   padding: 16px;
-
-  & > * {
-    width: calc((100% - 12px) / 2);
-    display: flex;
-  }
 }
 
 .gift {
-  padding: 8px 12px 16px;
+  position: relative;
+  overflow: hidden;
   border-radius: 12px;
+  background: var(--gradient);
+}
+
+.giftBody {
+  isolation: isolate;
+  padding: 8px 12px 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: relative;
-  overflow: hidden;
-  z-index: 0;
 }
 
 .pattern {
-  z-index: -1;
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+  width: 270px;
 }
 
 .availability {
@@ -102,7 +110,7 @@ function handleChoose(kindId: string) {
   font-size: 0.8125rem;
   font-style: normal;
   font-weight: 400;
-  line-height: 1.125rem; /* 138.462% */
+  line-height: 1.125rem;
   letter-spacing: -0.005rem;
 }
 
