@@ -124,6 +124,7 @@ const StarsEffect = defineAsyncComponent(() => import('./StarsEffect.vue'))
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   overflow: hidden;
+  z-index: 1;
 
   --border: var(--separator);
 }
@@ -163,6 +164,7 @@ const StarsEffect = defineAsyncComponent(() => import('./StarsEffect.vue'))
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  pointer-events: none;
   z-index: -1;
 }
 

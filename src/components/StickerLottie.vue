@@ -1,6 +1,15 @@
 <script setup lang="ts">
 import { DotLottieWorker } from '@lottiefiles/dotlottie-web'
-import { computed, onMounted, onUnmounted, shallowRef, useTemplateRef, watchEffect } from 'vue'
+import {
+  computed,
+  onActivated,
+  onDeactivated,
+  onMounted,
+  onUnmounted,
+  ref,
+  shallowRef,
+  useTemplateRef,
+} from 'vue'
 import { getLottieWorkerId } from '~/utils/lottie'
 
 const props = defineProps<{
@@ -17,17 +26,18 @@ const lottie = shallowRef<DotLottieWorker | null>(null)
 const src = computed(() => props.src)
 const isStar = computed(() => props.isStar)
 let lottieCurrentSrc: string | null = null
+const completed = ref(false)
 
-watchEffect(() => {
-  if (src.value && lottie.value && src.value !== lottieCurrentSrc) {
-    lottieCurrentSrc = src.value
-    lottie.value.load({
-      src: lottieCurrentSrc,
-      autoplay: true,
-      mode: isStar.value ? 'reverse-bounce' : 'forward',
-    })
+async function continuePlaying() {
+  const inst = lottie.value
+  if (inst) {
+    if (inst.isFrozen) {
+      await inst.unfreeze()
+    }
+    await inst.play()
+    completed.value = false
   }
-})
+}
 
 onMounted(() => {
   if (!canvas.value) {
@@ -44,6 +54,9 @@ onMounted(() => {
       src: lottieCurrentSrc,
       autoplay: true,
       mode: isStar.value ? 'reverse-bounce' : 'forward',
+      renderConfig: {
+        freezeOnOffscreen: false,
+      },
       workerId,
     })
   }
@@ -55,13 +68,23 @@ onMounted(() => {
     emit('ready')
   })
 
+  canvas.value.addEventListener('click', () => {
+    continuePlaying()
+  })
+
   lottie.value = instance
 })
 
+onActivated(() => {
+  continuePlaying()
+})
+
+onDeactivated(() => {
+  lottie.value?.freeze()
+})
+
 onUnmounted(() => {
-  if (lottie.value) {
-    lottie.value.destroy()
-  }
+  lottie.value?.destroy()
 })
 </script>
 
