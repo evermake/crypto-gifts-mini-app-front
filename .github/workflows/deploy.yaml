@@ -32,7 +32,7 @@ jobs:
       - name: Build
         run: npm run build -- --base /${{github.event.repository.name}}/
         env:
-          VITE_PUBLIC_API_BASE_URL: ${{ env.API_BASE_URL }}
+          VITE_PUBLIC_API_BASE_URL: ${{ vars.API_BASE_URL }}
 
       - name: Copy 404
         run: cp dist/index.html dist/404.html
