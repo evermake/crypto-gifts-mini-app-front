@@ -14,7 +14,7 @@
   "dependencies": {
     "@lottiefiles/dotlottie-web": "^0.36.1",
     "@tanstack/vue-query": "^5.59.20",
-    "@trpc/client": "^11.0.0-rc.619",
+    "@trpc/client": "^11.0.0-rc.630",
     "@vueuse/core": "^11.2.0",
     "bezier-easing": "^2.1.0",
     "sass": "^1.80.6",
@@ -23,15 +23,15 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.8.0",
-    "@trpc/server": "^11.0.0-rc.619",
+    "@trpc/server": "^11.0.0-rc.630",
     "@types/node": "^22.9.0",
-    "@vitejs/plugin-vue": "^5.1.4",
+    "@vitejs/plugin-vue": "^5.1.5",
     "eslint": "^9.14.0",
     "eslint-plugin-format": "^0.1.2",
     "taze": "^0.18.0",
     "telegram-webapps": "^7.10.0",
     "typescript": "~5.6.3",
-    "vite": "^5.4.10",
+    "vite": "^5.4.11",
     "vue-tsc": "^2.1.10"
   }
 }
